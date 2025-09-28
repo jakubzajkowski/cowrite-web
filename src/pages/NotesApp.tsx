@@ -1,93 +1,101 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { TopNavbar } from '@/components/navbar/TopNavbar';
-import { NoteSidebar } from '@/components/sidebar/NoteSidebar';
 import { TipTapEditor } from '@/components/editor/TipTapEditor';
-
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-  isStarred: boolean;
-  parentId?: string;
-}
+import { WorkspaceSelector } from '@/components/workspace/WorkspaceSelector';
+import { WorkspaceSidebar } from '@/components/workspace/WorkspaceSidebar';
+import { SaveStatus } from '@/components/workspace/SaveStatus';
+import { useWorkspace } from '@/hooks/useWorkspace';
 
 const NotesApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: '1',
-      title: 'Welcome to CoWrite',
-      content: '<h1>Welcome to CoWrite</h1><p>Start writing your notes here...</p>',
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date(),
-      isStarred: true,
-    },
-    {
-      id: '2',
-      title: 'Meeting Notes',
-      content: '<h2>Project Discussion</h2><p>Key points from today\'s meeting...</p>',
-      createdAt: new Date('2024-01-02'),
-      updatedAt: new Date(Date.now() - 86400000), // Yesterday
-      isStarred: false,
-    },
-  ]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   
-  const [currentNoteId, setCurrentNoteId] = useState<string | null>('1');
+  const {
+    workspace,
+    files,
+    currentFile,
+    isLoading,
+    isFileSystemAccessSupported,
+    selectWorkspace,
+    createNewFile,
+    saveFile,
+    deleteFile,
+    refreshWorkspace,
+    setCurrentFile,
+  } = useWorkspace();
 
-  const currentNote = notes.find(note => note.id === currentNoteId);
+  // Auto-save functionality
+  const [saveTimeout, setSaveTimeout] = useState<number | null>(null);
 
-  const handleNoteSelect = useCallback((noteId: string) => {
-    setCurrentNoteId(noteId);
-  }, []);
+  const handleContentChange = useCallback((content: string) => {
+    if (!currentFile) return;
 
-  const handleNoteCreate = useCallback((parentId?: string) => {
-    const newNote: Note = {
-      id: Date.now().toString(),
-      title: 'Untitled',
-      content: '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isStarred: false,
-      parentId,
-    };
-    setNotes(prev => [...prev, newNote]);
-    setCurrentNoteId(newNote.id);
-  }, []);
+    setHasUnsavedChanges(true);
 
-  const handleNoteDelete = useCallback((noteId: string) => {
-    setNotes(prev => prev.filter(note => note.id !== noteId));
-    if (currentNoteId === noteId) {
-      setCurrentNoteId(notes.find(note => note.id !== noteId)?.id || null);
+    // Clear existing timeout
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
     }
-  }, [currentNoteId, notes]);
 
-  const handleNoteRename = useCallback((noteId: string, newTitle: string) => {
-    setNotes(prev => prev.map(note => 
-      note.id === noteId 
-        ? { ...note, title: newTitle, updatedAt: new Date() }
-        : note
-    ));
-  }, []);
+    // Set new timeout for auto-save
+    const timeout = setTimeout(async () => {
+      if (currentFile) {
+        setIsSaving(true);
+        try {
+          await saveFile(currentFile, content);
+          setHasUnsavedChanges(false);
+          setLastSaved(new Date());
+        } catch (error) {
+          console.error('Error auto-saving file:', error);
+        } finally {
+          setIsSaving(false);
+        }
+      }
+    }, 1000); // Auto-save after 1 second of inactivity
 
-  const handleNoteToggleStar = useCallback((noteId: string) => {
-    setNotes(prev => prev.map(note => 
-      note.id === noteId 
-        ? { ...note, isStarred: !note.isStarred, updatedAt: new Date() }
-        : note
-    ));
-  }, []);
+    setSaveTimeout(timeout);
+  }, [currentFile, saveFile, saveTimeout]);
 
-  const handleNoteContentChange = useCallback((content: string) => {
-    if (!currentNoteId) return;
-    
-    setNotes(prev => prev.map(note => 
-      note.id === currentNoteId 
-        ? { ...note, content, updatedAt: new Date() }
-        : note
-    ));
-  }, [currentNoteId]);
+  // Manual save with Ctrl+S
+  useEffect(() => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (currentFile && hasUnsavedChanges) {
+          setIsSaving(true);
+          try {
+            // Get current content from editor
+            const editorContent = document.querySelector('.tiptap')?.innerHTML || '';
+            await saveFile(currentFile, editorContent);
+            setHasUnsavedChanges(false);
+            setLastSaved(new Date());
+          } catch (error) {
+            console.error('Error saving file:', error);
+          } finally {
+            setIsSaving(false);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentFile, hasUnsavedChanges, saveFile]);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+    };
+  }, [saveTimeout]);
+
+  const handleCreateFile = useCallback(async (fileName: string) => {
+    await createNewFile(fileName);
+  }, [createNewFile]);
 
   const handleSidebarToggle = () => setSidebarOpen(!sidebarOpen);
   const handleSearch = () => console.log('Search');
@@ -95,43 +103,72 @@ const NotesApp = () => {
   const handleExport = () => console.log('Export');
   const handleImport = () => console.log('Import');
 
+  // If no workspace is selected, show workspace selector
+  if (!workspace) {
+    return (
+      <div className="h-screen flex flex-col">
+        <TopNavbar
+          currentNoteTitle="Select Workspace"
+          onSidebarToggle={handleSidebarToggle}
+          onSearch={handleSearch}
+          onShare={handleShare}
+          onExport={handleExport}
+          onImport={handleImport}
+        />
+        <WorkspaceSelector 
+          onSelectWorkspace={selectWorkspace}
+          isSupported={isFileSystemAccessSupported()}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <TopNavbar
-        currentNoteTitle={currentNote?.title}
+        currentNoteTitle={currentFile?.name}
         onSidebarToggle={handleSidebarToggle}
         onSearch={handleSearch}
         onShare={handleShare}
         onExport={handleExport}
         onImport={handleImport}
+        rightContent={
+          <SaveStatus 
+            isSaving={isSaving}
+            lastSaved={lastSaved}
+            hasUnsavedChanges={hasUnsavedChanges}
+          />
+        }
       />
       
       <div className="flex flex-1 overflow-hidden">
         {sidebarOpen && (
-          <NoteSidebar
-            notes={notes}
-            currentNoteId={currentNoteId}
-            onNoteSelect={handleNoteSelect}
-            onNoteCreate={handleNoteCreate}
-            onNoteDelete={handleNoteDelete}
-            onNoteRename={handleNoteRename}
-            onNoteToggleStar={handleNoteToggleStar}
+          <WorkspaceSidebar
+            workspace={workspace}
+            files={files}
+            currentFile={currentFile}
+            isLoading={isLoading}
+            onFileSelect={setCurrentFile}
+            onCreateFile={handleCreateFile}
+            onDeleteFile={deleteFile}
+            onRefreshWorkspace={refreshWorkspace}
+            onSelectWorkspace={selectWorkspace}
           />
         )}
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          {currentNote ? (
+          {currentFile ? (
             <TipTapEditor
-              key={currentNote.id}
-              content={currentNote.content}
-              onChange={handleNoteContentChange}
-              placeholder={`Start writing "${currentNote.title}"...`}
+              key={currentFile.id}
+              content={currentFile.content}
+              onChange={handleContentChange}
+              placeholder={`Start writing "${currentFile.name}"...`}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center text-muted-foreground">
               <div className="text-center">
-                <h2 className="text-xl font-semibold mb-2">No note selected</h2>
-                <p>Choose a note from the sidebar or create a new one</p>
+                <h2 className="text-xl font-semibold mb-2">No file selected</h2>
+                <p>Choose a file from the sidebar or create a new one</p>
               </div>
             </div>
           )}

@@ -28,6 +28,7 @@ interface TopNavbarProps {
   onShare: () => void;
   onExport: () => void;
   onImport: () => void;
+  rightContent?: React.ReactNode;
 }
 
 export const TopNavbar = ({
@@ -37,6 +38,7 @@ export const TopNavbar = ({
   onShare,
   onExport,
   onImport,
+  rightContent,
 }: TopNavbarProps) => {
   return (
     <div className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -81,6 +83,9 @@ export const TopNavbar = ({
 
         {/* Right Section */}
         <div className="flex items-center gap-2">
+          {/* Custom right content */}
+          {rightContent}
+          
           {/* Action Buttons */}
           <Button
             variant="ghost"
