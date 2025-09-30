@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { set as idbSet, get as idbGet, del as idbDel } from 'idb-keyval';
 
 export interface MarkdownFile {
   id: string;
@@ -15,18 +16,70 @@ export interface WorkspaceFolder {
   path: string;
 }
 
+const WORKSPACE_HANDLE_KEY = 'cowrite-workspace-handle';
+const CURRENT_FILE_STORAGE_KEY = 'cowrite-current-file';
+
 export const useWorkspace = () => {
   const [workspace, setWorkspace] = useState<WorkspaceFolder | null>(null);
   const [files, setFiles] = useState<MarkdownFile[]>([]);
   const [currentFile, setCurrentFile] = useState<MarkdownFile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sprawdza czy przeglądarka obsługuje File System Access API
+  const saveWorkspaceToStorage = useCallback(async (workspaceData: WorkspaceFolder) => {
+    try {
+      await idbSet(WORKSPACE_HANDLE_KEY, workspaceData.handle);
+    } catch (error) {
+      console.error('Error saving workspace to IndexedDB:', error);
+    }
+  }, []);
+
+  const saveCurrentFileToStorage = useCallback((file: MarkdownFile | null) => {
+    try {
+      if (file) {
+        const storageData = {
+          id: file.id,
+          name: file.name,
+          path: file.path,
+        };
+        localStorage.setItem(CURRENT_FILE_STORAGE_KEY, JSON.stringify(storageData));
+      } else {
+        localStorage.removeItem(CURRENT_FILE_STORAGE_KEY);
+      }
+    } catch (error) {
+      console.error('Error saving current file to localStorage:', error);
+    }
+  }, []);
+
+  const restoreWorkspaceFromStorage = useCallback(async () => {
+    if (!isFileSystemAccessSupported()) return;
+
+    try {
+      const savedHandle = await idbGet(WORKSPACE_HANDLE_KEY);
+      if (!savedHandle) return;
+
+      const permission = await savedHandle.queryPermission({ mode: 'readwrite' });
+      if (permission === 'granted') {
+        const newWorkspace: WorkspaceFolder = {
+          name: savedHandle.name,
+          handle: savedHandle,
+          path: savedHandle.name,
+        };
+        setWorkspace(newWorkspace);
+        await loadFilesFromWorkspace(savedHandle);
+      }
+    } catch (error) {
+      console.error('Error restoring workspace from IndexedDB:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    restoreWorkspaceFromStorage();
+  }, [restoreWorkspaceFromStorage]);
+
   const isFileSystemAccessSupported = () => {
     return 'showDirectoryPicker' in window;
   };
 
-  // Wybiera folder jako workspace
   const selectWorkspace = useCallback(async () => {
     if (!isFileSystemAccessSupported()) {
       alert('File System Access API is not supported in your browser. Please use Chrome, Edge, or another Chromium-based browser.');
@@ -38,17 +91,17 @@ export const useWorkspace = () => {
       const newWorkspace: WorkspaceFolder = {
         name: dirHandle.name,
         handle: dirHandle,
-        path: dirHandle.name
+        path: dirHandle.name,
       };
-      
+
       setWorkspace(newWorkspace);
+      await saveWorkspaceToStorage(newWorkspace);
       await loadFilesFromWorkspace(dirHandle);
     } catch (error) {
       console.error('Error selecting workspace:', error);
     }
-  }, []);
+  }, [saveWorkspaceToStorage]);
 
-  // Ładuje pliki MD z workspace
   const loadFilesFromWorkspace = useCallback(async (dirHandle: FileSystemDirectoryHandle) => {
     setIsLoading(true);
     const markdownFiles: MarkdownFile[] = [];
@@ -63,27 +116,27 @@ export const useWorkspace = () => {
     }
   }, []);
 
-  // Rekurencyjnie skanuje katalog w poszukiwaniu plików MD
   const scanDirectory = async (
-    dirHandle: FileSystemDirectoryHandle, 
-    currentPath: string, 
+    dirHandle: FileSystemDirectoryHandle,
+    currentPath: string,
     files: MarkdownFile[]
   ) => {
+    // @ts-ignore
     for await (const [name, handle] of dirHandle) {
       const fullPath = currentPath ? `${currentPath}/${name}` : name;
-      
+
       if (handle.kind === 'file' && name.toLowerCase().endsWith('.md')) {
         try {
           const file = await handle.getFile();
           const content = await file.text();
-          
+
           files.push({
             id: fullPath,
-            name: name,
+            name,
             path: fullPath,
-            content: content,
+            content,
             lastModified: file.lastModified,
-            handle: handle
+            handle,
           });
         } catch (error) {
           console.error(`Error reading file ${fullPath}:`, error);
@@ -94,14 +147,12 @@ export const useWorkspace = () => {
     }
   };
 
-  // Tworzy nowy plik MD
   const createNewFile = useCallback(async (fileName: string, content = '') => {
     if (!workspace) return;
 
     try {
-      // Upewnij się, że nazwa kończy się na .md
       const finalFileName = fileName.endsWith('.md') ? fileName : `${fileName}.md`;
-      
+
       const fileHandle = await workspace.handle.getFileHandle(finalFileName, { create: true });
       const writable = await fileHandle.createWritable();
       await writable.write(content);
@@ -111,9 +162,9 @@ export const useWorkspace = () => {
         id: finalFileName,
         name: finalFileName,
         path: finalFileName,
-        content: content,
+        content,
         lastModified: Date.now(),
-        handle: fileHandle
+        handle: fileHandle,
       };
 
       setFiles(prev => [...prev, newFile]);
@@ -125,7 +176,6 @@ export const useWorkspace = () => {
     }
   }, [workspace]);
 
-  // Zapisuje plik
   const saveFile = useCallback(async (file: MarkdownFile, newContent: string) => {
     if (!file.handle) return;
 
@@ -137,11 +187,11 @@ export const useWorkspace = () => {
       const updatedFile = {
         ...file,
         content: newContent,
-        lastModified: Date.now()
+        lastModified: Date.now(),
       };
 
       setFiles(prev => prev.map(f => f.id === file.id ? updatedFile : f));
-      
+
       if (currentFile?.id === file.id) {
         setCurrentFile(updatedFile);
       }
@@ -153,14 +203,13 @@ export const useWorkspace = () => {
     }
   }, [currentFile]);
 
-  // Usuwa plik
   const deleteFile = useCallback(async (file: MarkdownFile) => {
     if (!workspace || !file.handle) return;
 
     try {
       await workspace.handle.removeEntry(file.name);
       setFiles(prev => prev.filter(f => f.id !== file.id));
-      
+
       if (currentFile?.id === file.id) {
         setCurrentFile(null);
       }
@@ -170,12 +219,37 @@ export const useWorkspace = () => {
     }
   }, [workspace, currentFile]);
 
-  // Odświeża pliki w workspace
   const refreshWorkspace = useCallback(async () => {
     if (workspace) {
       await loadFilesFromWorkspace(workspace.handle);
     }
   }, [workspace, loadFilesFromWorkspace]);
+
+  const setCurrentFileWithStorage = useCallback((file: MarkdownFile | null) => {
+    setCurrentFile(file);
+    saveCurrentFileToStorage(file);
+  }, [saveCurrentFileToStorage]);
+
+  const restoreCurrentFileFromStorage = useCallback(() => {
+    try {
+      const storedFile = localStorage.getItem(CURRENT_FILE_STORAGE_KEY);
+      if (storedFile) {
+        const fileData = JSON.parse(storedFile);
+        const foundFile = files.find(f => f.id === fileData.id);
+        if (foundFile) {
+          setCurrentFile(foundFile);
+        }
+      }
+    } catch (error) {
+      console.error('Error restoring current file from localStorage:', error);
+    }
+  }, [files]);
+
+  useEffect(() => {
+    if (files.length > 0) {
+      restoreCurrentFileFromStorage();
+    }
+  }, [files, restoreCurrentFileFromStorage]);
 
   return {
     workspace,
@@ -188,6 +262,6 @@ export const useWorkspace = () => {
     saveFile,
     deleteFile,
     refreshWorkspace,
-    setCurrentFile,
+    setCurrentFile: setCurrentFileWithStorage,
   };
 };

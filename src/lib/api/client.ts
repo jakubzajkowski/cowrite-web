@@ -73,9 +73,14 @@ export class ApiClient {
   setAuthToken(token: string): void {
     this.defaultHeaders.Authorization = `Bearer ${token}`;
   }
+
+  clearAuthToken(): void {
+    delete this.defaultHeaders.Authorization;
+  }
 }
 
 // Default instance
-export const apiClient = new ApiClient(
-  import.meta.env.VITE_API_URL || '/api'
-);
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+console.log('API URL:', apiUrl);
+
+export const apiClient = new ApiClient(apiUrl);

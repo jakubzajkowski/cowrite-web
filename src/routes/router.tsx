@@ -8,6 +8,8 @@ const HomePage = lazy(() => import('@/pages/HomePage'));
 const NotesApp = lazy(() => import('@/pages/NotesApp'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
+const SignInPage = lazy(() => import('@/pages/SignInPage'));
+const SignUpPage = lazy(() => import('@/pages/SignUpPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 // Loading component for lazy loaded routes
@@ -51,6 +53,22 @@ export const router = createBrowserRouter([
         element: (
           <LazyWrapper>
             <ContactPage />
+          </LazyWrapper>
+        ),
+      },
+      {
+        path: ROUTES.SIGNIN,
+        element: (
+          <LazyWrapper>
+            <SignInPage />
+          </LazyWrapper>
+        ),
+      },
+      {
+        path: ROUTES.SIGNUP,
+        element: (
+          <LazyWrapper>
+            <SignUpPage />
           </LazyWrapper>
         ),
       },

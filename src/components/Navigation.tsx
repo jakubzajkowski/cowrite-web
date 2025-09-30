@@ -11,6 +11,11 @@ const Navigation = () => {
     { path: ROUTES.CONTACT, label: 'Contact' },
   ];
 
+  const authItems = [
+    { path: ROUTES.SIGNIN, label: 'Sign In' },
+    { path: ROUTES.SIGNUP, label: 'Sign Up' },
+  ];
+
   return (
     <nav className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4">
@@ -18,20 +23,37 @@ const Navigation = () => {
           <Link to={ROUTES.HOME} className="text-xl font-bold text-gray-900">
             CoWrite
           </Link>
-          <div className="flex space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                  isCurrentPath(item.path)
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+          <div className="flex items-center space-x-8">
+            <div className="flex space-x-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`text-sm font-medium transition-colors hover:text-blue-600 ${
+                    isCurrentPath(item.path)
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-500'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+            <div className="flex items-center space-x-4">
+              {authItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    item.path === ROUTES.SIGNIN
+                      ? 'text-gray-700 hover:text-blue-600'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

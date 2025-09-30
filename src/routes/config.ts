@@ -3,6 +3,8 @@ export const ROUTES = {
   NOTES: '/notes',
   ABOUT: '/about',
   CONTACT: '/contact',
+  SIGNIN: '/signin',
+  SIGNUP: '/signup',
   NOT_FOUND: '*',
 } as const;
 
