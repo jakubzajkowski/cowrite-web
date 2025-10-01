@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -20,8 +20,6 @@ import {
   Star,
   Clock,
   Folder,
-  ChevronRight,
-  ChevronDown,
 } from 'lucide-react';
 
 interface Note {
@@ -54,21 +52,10 @@ export const NoteSidebar = ({
   onNoteToggleStar,
 }: NoteSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
   const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const toggleFolder = (folderId: string) => {
-    const newExpanded = new Set(expandedFolders);
-    if (newExpanded.has(folderId)) {
-      newExpanded.delete(folderId);
-    } else {
-      newExpanded.add(folderId);
-    }
-    setExpandedFolders(newExpanded);
-  };
 
   const NoteItem = ({ note }: { note: Note }) => {
     const [isEditing, setIsEditing] = useState(false);

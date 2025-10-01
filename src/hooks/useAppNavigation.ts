@@ -9,7 +9,7 @@ export const useAppNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const navigateTo = useCallback((path: RoutePath, options?: { replace?: boolean; state?: any }) => {
+  const navigateTo = useCallback((path: RoutePath, options?: { replace?: boolean }) => {
     navigate(path, options);
   }, [navigate]);
 

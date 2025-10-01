@@ -15,7 +15,6 @@ import {
   User,
   LogOut,
   Moon,
-  Sun,
   Share2,
   Download,
   Upload,

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { set as idbSet, get as idbGet, del as idbDel } from 'idb-keyval';
+import { set as idbSet, get as idbGet } from 'idb-keyval';
 
 export interface MarkdownFile {
   id: string;
@@ -121,7 +121,7 @@ export const useWorkspace = () => {
     currentPath: string,
     files: MarkdownFile[]
   ) => {
-    // @ts-ignore
+    // @ts-expect-error: for-await-of is supported in modern browsers
     for await (const [name, handle] of dirHandle) {
       const fullPath = currentPath ? `${currentPath}/${name}` : name;
 

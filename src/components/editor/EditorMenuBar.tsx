@@ -15,11 +15,6 @@ import {
   Quote,
   Undo,
   Redo,
-  Link,
-  Image,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
 } from 'lucide-react';
 
 interface EditorMenuBarProps {
@@ -39,7 +34,7 @@ export const EditorMenuBar = ({ editor }: EditorMenuBarProps) => {
   }: { 
     onClick: () => void; 
     isActive?: boolean; 
-    icon: any; 
+    icon: React.ComponentType<{ className?: string }>; 
     tooltip: string;
   }) => (
     <TooltipProvider>

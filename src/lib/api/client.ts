@@ -79,8 +79,7 @@ export class ApiClient {
   }
 }
 
-// Default instance
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const apiUrl = '/api';
 console.log('API URL:', apiUrl);
 
 export const apiClient = new ApiClient(apiUrl);
