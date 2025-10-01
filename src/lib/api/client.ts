@@ -2,11 +2,9 @@ import type { ApiResponse } from './types';
 import { ApiClientError } from './types';
 
 export class ApiClient {
-  private baseURL: string;
   private defaultHeaders: Record<string, string>;
 
-  constructor(baseURL: string = '', headers: Record<string, string> = {}) {
-    this.baseURL = baseURL;
+  constructor(headers: Record<string, string> = {}) {
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       ...headers,
@@ -14,19 +12,18 @@ export class ApiClient {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
-    
     const config: RequestInit = {
       ...options,
       headers: {
         ...this.defaultHeaders,
         ...options.headers,
       },
+      credentials: 'include',
     };
 
     try {
-      const response = await fetch(url, config);
-      
+      const response = await fetch(endpoint, config);
+
       if (!response.ok) {
         throw new ApiClientError({
           message: `HTTP ${response.status}: ${response.statusText}`,
@@ -37,10 +34,8 @@ export class ApiClient {
       const data: ApiResponse<T> = await response.json();
       return data.data;
     } catch (error) {
-      if (error instanceof ApiClientError) {
-        throw error;
-      }
-      
+      if (error instanceof ApiClientError) throw error;
+
       throw new ApiClientError({
         message: error instanceof Error ? error.message : 'Network error',
         status: 0,
@@ -79,7 +74,4 @@ export class ApiClient {
   }
 }
 
-const apiUrl = '/api';
-console.log('API URL:', apiUrl);
-
-export const apiClient = new ApiClient(apiUrl);
+export const apiClient = new ApiClient();
