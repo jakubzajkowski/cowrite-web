@@ -15,8 +15,8 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <SignUpForm 
-      onSubmit={handleSignUp} 
+    <SignUpForm
+      onSubmit={handleSignUp}
       isLoading={registerMutation.isPending}
       error={registerMutation.error?.message}
     />

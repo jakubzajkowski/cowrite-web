@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, FileText } from 'lucide-react';
@@ -45,10 +51,11 @@ export const CreateFileDialog = ({ open, onOpenChange, onCreateFile }: CreateFil
             Create New Markdown File
           </DialogTitle>
           <DialogDescription>
-            Enter a name for your new markdown file. The .md extension will be added automatically if not provided.
+            Enter a name for your new markdown file. The .md extension will be added automatically
+            if not provided.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="fileName">File Name</Label>
@@ -56,25 +63,18 @@ export const CreateFileDialog = ({ open, onOpenChange, onCreateFile }: CreateFil
               id="fileName"
               placeholder="my-document.md"
               value={fileName}
-              onChange={(e) => setFileName(e.target.value)}
+              onChange={e => setFileName(e.target.value)}
               onKeyDown={handleKeyDown}
               autoFocus
             />
           </div>
         </div>
-        
+
         <div className="flex justify-end space-x-2">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isCreating}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isCreating}>
             Cancel
           </Button>
-          <Button
-            onClick={handleCreate}
-            disabled={!fileName.trim() || isCreating}
-          >
+          <Button onClick={handleCreate} disabled={!fileName.trim() || isCreating}>
             {isCreating ? (
               <>Creating...</>
             ) : (
@@ -99,15 +99,11 @@ export const CreateFileButton = ({ onCreateFile }: CreateFileButtonProps) => {
 
   return (
     <>
-      <Button
-        onClick={() => setDialogOpen(true)}
-        size="sm"
-        className="w-full"
-      >
+      <Button onClick={() => setDialogOpen(true)} size="sm" className="w-full">
         <Plus className="w-4 h-4 mr-2" />
         New File
       </Button>
-      
+
       <CreateFileDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

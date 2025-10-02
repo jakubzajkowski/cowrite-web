@@ -11,7 +11,7 @@ const NotesApp = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  
+
   const {
     workspace,
     files,
@@ -29,34 +29,37 @@ const NotesApp = () => {
   // Auto-save functionality
   const [saveTimeout, setSaveTimeout] = useState<number | null>(null);
 
-  const handleContentChange = useCallback((content: string) => {
-    if (!currentFile) return;
+  const handleContentChange = useCallback(
+    (content: string) => {
+      if (!currentFile) return;
 
-    setHasUnsavedChanges(true);
+      setHasUnsavedChanges(true);
 
-    // Clear existing timeout
-    if (saveTimeout) {
-      clearTimeout(saveTimeout);
-    }
-
-    // Set new timeout for auto-save
-    const timeout = setTimeout(async () => {
-      if (currentFile) {
-        setIsSaving(true);
-        try {
-          await saveFile(currentFile, content);
-          setHasUnsavedChanges(false);
-          setLastSaved(new Date());
-        } catch (error) {
-          console.error('Error auto-saving file:', error);
-        } finally {
-          setIsSaving(false);
-        }
+      // Clear existing timeout
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
       }
-    }, 1000); // Auto-save after 1 second of inactivity
 
-    setSaveTimeout(timeout);
-  }, [currentFile, saveFile, saveTimeout]);
+      // Set new timeout for auto-save
+      const timeout = setTimeout(async () => {
+        if (currentFile) {
+          setIsSaving(true);
+          try {
+            await saveFile(currentFile, content);
+            setHasUnsavedChanges(false);
+            setLastSaved(new Date());
+          } catch (error) {
+            console.error('Error auto-saving file:', error);
+          } finally {
+            setIsSaving(false);
+          }
+        }
+      }, 1000); // Auto-save after 1 second of inactivity
+
+      setSaveTimeout(timeout);
+    },
+    [currentFile, saveFile, saveTimeout]
+  );
 
   // Manual save with Ctrl+S
   useEffect(() => {
@@ -93,9 +96,12 @@ const NotesApp = () => {
     };
   }, [saveTimeout]);
 
-  const handleCreateFile = useCallback(async (fileName: string) => {
-    await createNewFile(fileName);
-  }, [createNewFile]);
+  const handleCreateFile = useCallback(
+    async (fileName: string) => {
+      await createNewFile(fileName);
+    },
+    [createNewFile]
+  );
 
   const handleSidebarToggle = () => setSidebarOpen(!sidebarOpen);
   const handleSearch = () => console.log('Search');
@@ -115,7 +121,7 @@ const NotesApp = () => {
           onExport={handleExport}
           onImport={handleImport}
         />
-        <WorkspaceSelector 
+        <WorkspaceSelector
           onSelectWorkspace={selectWorkspace}
           isSupported={isFileSystemAccessSupported()}
         />
@@ -133,14 +139,14 @@ const NotesApp = () => {
         onExport={handleExport}
         onImport={handleImport}
         rightContent={
-          <SaveStatus 
+          <SaveStatus
             isSaving={isSaving}
             lastSaved={lastSaved}
             hasUnsavedChanges={hasUnsavedChanges}
           />
         }
       />
-      
+
       <div className="flex flex-1 overflow-hidden">
         {sidebarOpen && (
           <WorkspaceSidebar
@@ -155,7 +161,7 @@ const NotesApp = () => {
             onSelectWorkspace={selectWorkspace}
           />
         )}
-        
+
         <div className="flex-1 flex flex-col overflow-hidden">
           {currentFile ? (
             <TipTapEditor

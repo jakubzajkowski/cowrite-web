@@ -76,13 +76,13 @@ export const NoteSidebar = ({
         onClick={() => !isEditing && onNoteSelect(note.id)}
       >
         <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-        
+
         {isEditing ? (
           <Input
             value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
+            onChange={e => setEditTitle(e.target.value)}
             onBlur={handleRename}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Enter') handleRename();
               if (e.key === 'Escape') {
                 setEditTitle(note.title);
@@ -97,17 +97,15 @@ export const NoteSidebar = ({
         )}
 
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {note.isStarred && (
-            <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-          )}
-          
+          {note.isStarred && <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />}
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={(e) => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
               >
                 <MoreHorizontal className="h-3 w-3" />
               </Button>
@@ -122,10 +120,7 @@ export const NoteSidebar = ({
                 {note.isStarred ? 'Unstar' : 'Star'}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                className="text-destructive"
-                onClick={() => onNoteDelete(note.id)}
-              >
+              <DropdownMenuItem className="text-destructive" onClick={() => onNoteDelete(note.id)}>
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
@@ -161,14 +156,14 @@ export const NoteSidebar = ({
             </Button>
           </div>
         </div>
-        
+
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search notes..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -224,12 +219,7 @@ export const NoteSidebar = ({
           <div className="text-center text-muted-foreground py-8">
             <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No notes found</p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mt-2"
-              onClick={() => onNoteCreate()}
-            >
+            <Button variant="ghost" size="sm" className="mt-2" onClick={() => onNoteCreate()}>
               <Plus className="h-4 w-4 mr-2" />
               Create your first note
             </Button>

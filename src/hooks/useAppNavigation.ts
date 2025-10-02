@@ -9,9 +9,12 @@ export const useAppNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const navigateTo = useCallback((path: RoutePath, options?: { replace?: boolean }) => {
-    navigate(path, options);
-  }, [navigate]);
+  const navigateTo = useCallback(
+    (path: RoutePath, options?: { replace?: boolean }) => {
+      navigate(path, options);
+    },
+    [navigate]
+  );
 
   const goBack = useCallback(() => {
     navigate(-1);
@@ -21,9 +24,12 @@ export const useAppNavigation = () => {
     navigate(1);
   }, [navigate]);
 
-  const isCurrentPath = useCallback((path: RoutePath) => {
-    return location.pathname === path;
-  }, [location.pathname]);
+  const isCurrentPath = useCallback(
+    (path: RoutePath) => {
+      return location.pathname === path;
+    },
+    [location.pathname]
+  );
 
   const getCurrentPath = useCallback(() => {
     return location.pathname as RoutePath;

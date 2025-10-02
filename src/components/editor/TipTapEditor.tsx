@@ -12,10 +12,10 @@ interface TipTapEditorProps {
   placeholder?: string;
 }
 
-export const TipTapEditor = ({ 
-  content = '', 
-  onChange, 
-  placeholder = 'Start writing...' 
+export const TipTapEditor = ({
+  content = '',
+  onChange,
+  placeholder = 'Start writing...',
 }: TipTapEditorProps) => {
   const editor = useEditor({
     extensions: [
@@ -44,7 +44,8 @@ export const TipTapEditor = ({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none max-w-none',
+        class:
+          'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none max-w-none',
       },
     },
   });
@@ -57,10 +58,7 @@ export const TipTapEditor = ({
     <div className="h-full flex flex-col">
       <EditorMenuBar editor={editor} />
       <div className="flex-1 overflow-auto p-6">
-        <EditorContent 
-          editor={editor} 
-          className="min-h-full focus:outline-none"
-        />
+        <EditorContent editor={editor} className="min-h-full focus:outline-none" />
       </div>
     </div>
   );

@@ -3,7 +3,12 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { MarkdownFile } from '@/hooks/useWorkspace';
 import { FileText, MoreHorizontal, Trash2, RefreshCw } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 
 interface FileListProps {
@@ -15,13 +20,13 @@ interface FileListProps {
   isLoading: boolean;
 }
 
-export const FileList = ({ 
-  files, 
-  currentFile, 
-  onFileSelect, 
-  onFileDelete, 
-  onRefresh, 
-  isLoading 
+export const FileList = ({
+  files,
+  currentFile,
+  onFileSelect,
+  onFileDelete,
+  onRefresh,
+  isLoading,
 }: FileListProps) => {
   const [deletingFile, setDeletingFile] = useState<string | null>(null);
 
@@ -48,12 +53,7 @@ export const FileList = ({
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-3 border-b">
         <h3 className="font-medium">Files ({files.length})</h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onRefresh}
-          disabled={isLoading}
-        >
+        <Button variant="ghost" size="sm" onClick={onRefresh} disabled={isLoading}>
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
@@ -67,7 +67,7 @@ export const FileList = ({
           </div>
         ) : (
           <div className="p-2 space-y-1">
-            {files.map((file) => (
+            {files.map(file => (
               <div
                 key={file.id}
                 className={`group flex items-center justify-between p-2 rounded-md hover:bg-accent cursor-pointer transition-colors ${
@@ -91,14 +91,14 @@ export const FileList = ({
                       variant="ghost"
                       size="sm"
                       className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-auto"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={e => e.stopPropagation()}
                     >
                       <MoreHorizontal className="w-3 h-3" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleDelete(file);
                       }}

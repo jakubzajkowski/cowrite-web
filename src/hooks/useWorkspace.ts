@@ -82,7 +82,9 @@ export const useWorkspace = () => {
 
   const selectWorkspace = useCallback(async () => {
     if (!isFileSystemAccessSupported()) {
-      alert('File System Access API is not supported in your browser. Please use Chrome, Edge, or another Chromium-based browser.');
+      alert(
+        'File System Access API is not supported in your browser. Please use Chrome, Edge, or another Chromium-based browser.'
+      );
       return;
     }
 
@@ -147,77 +149,86 @@ export const useWorkspace = () => {
     }
   };
 
-  const createNewFile = useCallback(async (fileName: string, content = '') => {
-    if (!workspace) return;
+  const createNewFile = useCallback(
+    async (fileName: string, content = '') => {
+      if (!workspace) return;
 
-    try {
-      const finalFileName = fileName.endsWith('.md') ? fileName : `${fileName}.md`;
+      try {
+        const finalFileName = fileName.endsWith('.md') ? fileName : `${fileName}.md`;
 
-      const fileHandle = await workspace.handle.getFileHandle(finalFileName, { create: true });
-      const writable = await fileHandle.createWritable();
-      await writable.write(content);
-      await writable.close();
+        const fileHandle = await workspace.handle.getFileHandle(finalFileName, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(content);
+        await writable.close();
 
-      const newFile: MarkdownFile = {
-        id: finalFileName,
-        name: finalFileName,
-        path: finalFileName,
-        content,
-        lastModified: Date.now(),
-        handle: fileHandle,
-      };
+        const newFile: MarkdownFile = {
+          id: finalFileName,
+          name: finalFileName,
+          path: finalFileName,
+          content,
+          lastModified: Date.now(),
+          handle: fileHandle,
+        };
 
-      setFiles(prev => [...prev, newFile]);
-      setCurrentFile(newFile);
-      return newFile;
-    } catch (error) {
-      console.error('Error creating file:', error);
-      throw error;
-    }
-  }, [workspace]);
-
-  const saveFile = useCallback(async (file: MarkdownFile, newContent: string) => {
-    if (!file.handle) return;
-
-    try {
-      const writable = await file.handle.createWritable();
-      await writable.write(newContent);
-      await writable.close();
-
-      const updatedFile = {
-        ...file,
-        content: newContent,
-        lastModified: Date.now(),
-      };
-
-      setFiles(prev => prev.map(f => f.id === file.id ? updatedFile : f));
-
-      if (currentFile?.id === file.id) {
-        setCurrentFile(updatedFile);
+        setFiles(prev => [...prev, newFile]);
+        setCurrentFile(newFile);
+        return newFile;
+      } catch (error) {
+        console.error('Error creating file:', error);
+        throw error;
       }
+    },
+    [workspace]
+  );
 
-      return updatedFile;
-    } catch (error) {
-      console.error('Error saving file:', error);
-      throw error;
-    }
-  }, [currentFile]);
+  const saveFile = useCallback(
+    async (file: MarkdownFile, newContent: string) => {
+      if (!file.handle) return;
 
-  const deleteFile = useCallback(async (file: MarkdownFile) => {
-    if (!workspace || !file.handle) return;
+      try {
+        const writable = await file.handle.createWritable();
+        await writable.write(newContent);
+        await writable.close();
 
-    try {
-      await workspace.handle.removeEntry(file.name);
-      setFiles(prev => prev.filter(f => f.id !== file.id));
+        const updatedFile = {
+          ...file,
+          content: newContent,
+          lastModified: Date.now(),
+        };
 
-      if (currentFile?.id === file.id) {
-        setCurrentFile(null);
+        setFiles(prev => prev.map(f => (f.id === file.id ? updatedFile : f)));
+
+        if (currentFile?.id === file.id) {
+          setCurrentFile(updatedFile);
+        }
+
+        return updatedFile;
+      } catch (error) {
+        console.error('Error saving file:', error);
+        throw error;
       }
-    } catch (error) {
-      console.error('Error deleting file:', error);
-      throw error;
-    }
-  }, [workspace, currentFile]);
+    },
+    [currentFile]
+  );
+
+  const deleteFile = useCallback(
+    async (file: MarkdownFile) => {
+      if (!workspace || !file.handle) return;
+
+      try {
+        await workspace.handle.removeEntry(file.name);
+        setFiles(prev => prev.filter(f => f.id !== file.id));
+
+        if (currentFile?.id === file.id) {
+          setCurrentFile(null);
+        }
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        throw error;
+      }
+    },
+    [workspace, currentFile]
+  );
 
   const refreshWorkspace = useCallback(async () => {
     if (workspace) {
@@ -225,10 +236,13 @@ export const useWorkspace = () => {
     }
   }, [workspace, loadFilesFromWorkspace]);
 
-  const setCurrentFileWithStorage = useCallback((file: MarkdownFile | null) => {
-    setCurrentFile(file);
-    saveCurrentFileToStorage(file);
-  }, [saveCurrentFileToStorage]);
+  const setCurrentFileWithStorage = useCallback(
+    (file: MarkdownFile | null) => {
+      setCurrentFile(file);
+      saveCurrentFileToStorage(file);
+    },
+    [saveCurrentFileToStorage]
+  );
 
   const restoreCurrentFileFromStorage = useCallback(() => {
     try {

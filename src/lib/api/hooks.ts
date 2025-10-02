@@ -16,9 +16,9 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: LoginRequest) => authApi.login(credentials),
     onSuccess: (data: AuthResponse) => {
-        console.log('Login successful:', data);
+      console.log('Login successful:', data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Login failed:', error);
       // You can add toast notifications here
     },
@@ -32,7 +32,7 @@ export const useRegister = () => {
     onSuccess: (data: AuthResponse) => {
       console.log('Registration successful:', data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Registration failed:', error);
       // You can add toast notifications here
     },
@@ -58,9 +58,9 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-    console.log('Logout successful');
+      console.log('Logout successful');
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Logout failed:', error);
       // Even if logout fails on server, clear local data
       localStorage.removeItem('auth_token');

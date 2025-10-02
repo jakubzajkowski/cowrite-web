@@ -21,9 +21,7 @@ const PageLoader = () => (
 
 // Wrapper for lazy loaded components
 const LazyWrapper = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<PageLoader />}>
-    {children}
-  </Suspense>
+  <Suspense fallback={<PageLoader />}>{children}</Suspense>
 );
 
 // Create router configuration

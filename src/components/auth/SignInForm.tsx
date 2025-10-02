@@ -6,7 +6,14 @@ import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { loginSchema, type LoginFormData } from '@/lib/validation/auth';
 
 interface SignInFormProps {
@@ -104,11 +111,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, isLoading = fa
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={!isValid || isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={!isValid || isLoading}>
               {isLoading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

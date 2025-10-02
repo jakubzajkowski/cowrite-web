@@ -26,22 +26,22 @@ export const EditorMenuBar = ({ editor }: EditorMenuBarProps) => {
     return null;
   }
 
-  const MenuButton = ({ 
-    onClick, 
-    isActive = false, 
-    icon: Icon, 
-    tooltip 
-  }: { 
-    onClick: () => void; 
-    isActive?: boolean; 
-    icon: React.ComponentType<{ className?: string }>; 
+  const MenuButton = ({
+    onClick,
+    isActive = false,
+    icon: Icon,
+    tooltip,
+  }: {
+    onClick: () => void;
+    isActive?: boolean;
+    icon: React.ComponentType<{ className?: string }>;
     tooltip: string;
   }) => (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant={isActive ? "default" : "ghost"}
+            variant={isActive ? 'default' : 'ghost'}
             size="sm"
             onClick={onClick}
             className="h-8 w-8 p-0"
@@ -70,9 +70,9 @@ export const EditorMenuBar = ({ editor }: EditorMenuBarProps) => {
           onClick={() => editor.chain().focus().redo().run()}
           tooltip="Redo"
         />
-        
+
         <Separator orientation="vertical" className="mx-1 h-6" />
-        
+
         {/* Headings */}
         <MenuButton
           icon={Heading1}
@@ -92,9 +92,9 @@ export const EditorMenuBar = ({ editor }: EditorMenuBarProps) => {
           isActive={editor.isActive('heading', { level: 3 })}
           tooltip="Heading 3"
         />
-        
+
         <Separator orientation="vertical" className="mx-1 h-6" />
-        
+
         {/* Text formatting */}
         <MenuButton
           icon={Bold}
@@ -120,9 +120,9 @@ export const EditorMenuBar = ({ editor }: EditorMenuBarProps) => {
           isActive={editor.isActive('code')}
           tooltip="Code"
         />
-        
+
         <Separator orientation="vertical" className="mx-1 h-6" />
-        
+
         {/* Lists and quote */}
         <MenuButton
           icon={List}

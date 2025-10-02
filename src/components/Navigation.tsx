@@ -25,7 +25,7 @@ const Navigation = () => {
           </Link>
           <div className="flex items-center space-x-8">
             <div className="flex space-x-8">
-              {navItems.map((item) => (
+              {navItems.map(item => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -40,7 +40,7 @@ const Navigation = () => {
               ))}
             </div>
             <div className="flex items-center space-x-4">
-              {authItems.map((item) => (
+              {authItems.map(item => (
                 <Link
                   key={item.path}
                   to={item.path}

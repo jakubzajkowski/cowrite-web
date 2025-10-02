@@ -16,13 +16,16 @@ export const SaveStatus = ({ isSaving, lastSaved, hasUnsavedChanges }: SaveStatu
     const updateTimeAgo = () => {
       const now = Date.now();
       const diff = now - lastSaved.getTime();
-      
-      if (diff < 60000) { // Less than 1 minute
+
+      if (diff < 60000) {
+        // Less than 1 minute
         setTimeAgo('just now');
-      } else if (diff < 3600000) { // Less than 1 hour
+      } else if (diff < 3600000) {
+        // Less than 1 hour
         const minutes = Math.floor(diff / 60000);
         setTimeAgo(`${minutes}m ago`);
-      } else if (diff < 86400000) { // Less than 1 day
+      } else if (diff < 86400000) {
+        // Less than 1 day
         const hours = Math.floor(diff / 3600000);
         setTimeAgo(`${hours}h ago`);
       } else {

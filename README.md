@@ -21,10 +21,12 @@ npm run preview
 ## 📋 Available Scripts
 
 ### Development
+
 - `npm run dev` - Start development server
 - `npm run preview` - Preview production build locally
 
 ### Code Quality
+
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Run ESLint and fix issues automatically
 - `npm run format` - Format code with Prettier
@@ -32,6 +34,7 @@ npm run preview
 - `npm run type-check` - Run TypeScript type checking
 
 ### CI/CD
+
 - `npm run ci` - Run all checks (type-check + lint + format:check)
 - `npm run fix` - Fix all auto-fixable issues (lint:fix + format)
 
@@ -60,11 +63,13 @@ npm run preview
 ## 🔧 Development Workflow
 
 1. **Before committing**:
+
    ```bash
    npm run ci
    ```
 
 2. **Auto-fix issues**:
+
    ```bash
    npm run fix
    ```
@@ -107,15 +112,15 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -136,5 +141,5 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```

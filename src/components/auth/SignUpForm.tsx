@@ -6,7 +6,14 @@ import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { registerSchema, type RegisterFormData } from '@/lib/validation/auth';
 
 interface SignUpFormProps {
@@ -34,7 +41,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading = fa
   // Function to check password strength
   const getPasswordStrength = (password: string) => {
     if (!password) return { score: 0, label: '', color: '' };
-    
+
     let score = 0;
     if (password.length >= 8) score++;
     if (/[a-z]/.test(password)) score++;
@@ -128,10 +135,15 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading = fa
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
                     <span>Password strength:</span>
-                    <span className={`font-medium ${
-                      passwordStrength.score < 3 ? 'text-red-600' : 
-                      passwordStrength.score < 4 ? 'text-yellow-600' : 'text-green-600'
-                    }`}>
+                    <span
+                      className={`font-medium ${
+                        passwordStrength.score < 3
+                          ? 'text-red-600'
+                          : passwordStrength.score < 4
+                            ? 'text-yellow-600'
+                            : 'text-green-600'
+                      }`}
+                    >
                       {passwordStrength.label}
                     </span>
                   </div>
@@ -164,11 +176,17 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading = fa
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.confirmPassword.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -198,11 +216,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading = fa
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={!isValid || isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={!isValid || isLoading}>
               {isLoading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

@@ -44,19 +44,12 @@ export const TopNavbar = ({
       <div className="h-full flex items-center justify-between px-4">
         {/* Left Section */}
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={onSidebarToggle}
-          >
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onSidebarToggle}>
             <Menu className="h-4 w-4" />
           </Button>
-          
+
           <div className="flex items-center gap-2">
-            <div className="text-lg font-semibold text-primary">
-              CoWrite
-            </div>
+            <div className="text-lg font-semibold text-primary">CoWrite</div>
             {currentNoteTitle && (
               <>
                 <span className="text-muted-foreground">/</span>
@@ -70,12 +63,7 @@ export const TopNavbar = ({
 
         {/* Center Section */}
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={onSearch}
-          >
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onSearch}>
             <Search className="h-4 w-4" />
           </Button>
         </div>
@@ -84,24 +72,15 @@ export const TopNavbar = ({
         <div className="flex items-center gap-2">
           {/* Custom right content */}
           {rightContent}
-          
+
           {/* Action Buttons */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={onShare}
-          >
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onShare}>
             <Share2 className="h-4 w-4" />
           </Button>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2"
-              >
+              <Button variant="ghost" size="sm" className="h-8 px-2">
                 <Download className="h-4 w-4 mr-1" />
                 Export
               </Button>
@@ -126,15 +105,9 @@ export const TopNavbar = ({
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 rounded-full"
-              >
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="text-xs">
-                    U
-                  </AvatarFallback>
+                  <AvatarFallback className="text-xs">U</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>

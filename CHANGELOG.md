@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2025-10-01
 
 ### Added
+
 - Prettier configuration and formatting scripts
 - Extended linting and formatting commands in package.json
 - Type checking script
@@ -16,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-10-01
 
 ### Added
+
 - Initial React application setup with Vite
 - Authentication system with React Hook Form and Zod validation
 - Sign in and sign up forms with real-time validation
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Docker containerization support
 
 ### Features
+
 - **Authentication**: Complete auth flow with login/register
 - **Forms**: React Hook Form + Zod validation
 - **API**: React Query mutations and queries
@@ -43,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Development**: ESLint, Prettier, TypeScript setup
 
 ### Technical Stack
+
 - React 19.1.1
 - TypeScript 5.8.3
 - Vite 7.1.7
@@ -57,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - Initial Setup
 
 ### Added
+
 - Project initialization with Vite
 - Basic React setup
 - TypeScript configuration

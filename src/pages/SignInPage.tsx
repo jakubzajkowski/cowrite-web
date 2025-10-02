@@ -14,8 +14,8 @@ const SignInPage: React.FC = () => {
   };
 
   return (
-    <SignInForm 
-      onSubmit={handleSignIn} 
+    <SignInForm
+      onSubmit={handleSignIn}
       isLoading={loginMutation.isPending}
       error={loginMutation.error?.message}
     />

@@ -25,7 +25,7 @@ export const WorkspaceSidebar = ({
   onCreateFile,
   onDeleteFile,
   onRefreshWorkspace,
-  onSelectWorkspace
+  onSelectWorkspace,
 }: WorkspaceSidebarProps) => {
   if (!workspace) {
     return null;
@@ -43,16 +43,11 @@ export const WorkspaceSidebar = ({
               <p className="text-xs text-muted-foreground">Workspace</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onSelectWorkspace}
-            title="Change workspace"
-          >
+          <Button variant="ghost" size="sm" onClick={onSelectWorkspace} title="Change workspace">
             <Settings className="w-4 h-4" />
           </Button>
         </div>
-        
+
         <CreateFileButton onCreateFile={onCreateFile} />
       </div>
 
