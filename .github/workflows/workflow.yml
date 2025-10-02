@@ -55,10 +55,10 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/cowrite-frontend:latest
+          IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/cowrite-web:latest
           docker build -t $IMAGE_NAME .
 
       - name: Push Docker Image
         run: |
-          IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/cowrite-frontend:latest
+          IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/cowrite-web:latest
           docker push $IMAGE_NAME
