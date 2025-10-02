@@ -39,7 +39,7 @@ jobs:
   docker:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    needs: lint-format-version 
+    needs: lint-format-version
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
