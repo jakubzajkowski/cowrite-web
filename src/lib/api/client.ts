@@ -1,4 +1,3 @@
-import type { ApiResponse } from './types';
 import { ApiClientError } from './types';
 
 export class ApiClient {
@@ -31,8 +30,8 @@ export class ApiClient {
         });
       }
 
-      const data: ApiResponse<T> = await response.json();
-      return data.data;
+      const data: T = await response.json();
+      return data;
     } catch (error) {
       if (error instanceof ApiClientError) throw error;
 

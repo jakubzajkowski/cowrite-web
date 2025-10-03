@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import RootLayout from '@/layouts/RootLayout';
 import { ROUTES } from './config';
+import { ProtectedRoute } from '@/lib/auth';
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -84,9 +85,11 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.NOTES,
     element: (
-      <LazyWrapper>
-        <NotesApp />
-      </LazyWrapper>
+      <ProtectedRoute>
+        <LazyWrapper>
+          <NotesApp />
+        </LazyWrapper>
+      </ProtectedRoute>
     ),
   },
 ]);

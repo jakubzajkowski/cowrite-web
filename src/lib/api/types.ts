@@ -1,11 +1,3 @@
-// Basic API Response types
-export interface ApiResponse<T = unknown> {
-  data: T;
-  success: boolean;
-  message?: string;
-}
-
-// Error types
 export interface ApiError {
   message: string;
   status: number;
@@ -24,7 +16,6 @@ export class ApiClientError extends Error {
   }
 }
 
-// Request configuration
 export interface RequestConfig {
   timeout?: number;
   headers?: Record<string, string>;
@@ -42,15 +33,8 @@ export interface RegisterRequest {
   password: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  user: User;
-}
-
-export interface User {
+export interface UserResponse {
   id: string;
   username: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
 }
