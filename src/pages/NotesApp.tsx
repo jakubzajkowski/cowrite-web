@@ -5,12 +5,14 @@ import { WorkspaceSelector } from '@/components/workspace/WorkspaceSelector';
 import { WorkspaceSidebar } from '@/components/workspace/WorkspaceSidebar';
 import { SaveStatus } from '@/components/workspace/SaveStatus';
 import { useWorkspace } from '@/hooks/useWorkspace';
+import { LLMChatPanel } from '@/components/chat/LLMChatPanel';
 
 const NotesApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const {
     workspace,
@@ -104,6 +106,7 @@ const NotesApp = () => {
   );
 
   const handleSidebarToggle = () => setSidebarOpen(!sidebarOpen);
+  const handleChatToggle = () => setChatOpen(o => !o);
   const handleSearch = () => console.log('Search');
   const handleShare = () => console.log('Share');
   const handleExport = () => console.log('Export');
@@ -120,11 +123,14 @@ const NotesApp = () => {
           onShare={handleShare}
           onExport={handleExport}
           onImport={handleImport}
+          onChatToggle={handleChatToggle}
+          isChatOpen={chatOpen}
         />
         <WorkspaceSelector
           onSelectWorkspace={selectWorkspace}
           isSupported={isFileSystemAccessSupported()}
         />
+        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
       </div>
     );
   }
@@ -145,6 +151,8 @@ const NotesApp = () => {
             hasUnsavedChanges={hasUnsavedChanges}
           />
         }
+        onChatToggle={handleChatToggle}
+        isChatOpen={chatOpen}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -180,6 +188,7 @@ const NotesApp = () => {
           )}
         </div>
       </div>
+      <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   );
 };

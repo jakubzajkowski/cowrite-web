@@ -18,6 +18,7 @@ import {
   Share2,
   Download,
   Upload,
+  MessageSquare,
 } from 'lucide-react';
 
 interface TopNavbarProps {
@@ -28,6 +29,8 @@ interface TopNavbarProps {
   onExport: () => void;
   onImport: () => void;
   rightContent?: React.ReactNode;
+  onChatToggle?: () => void;
+  isChatOpen?: boolean;
 }
 
 export const TopNavbar = ({
@@ -38,6 +41,8 @@ export const TopNavbar = ({
   onExport,
   onImport,
   rightContent,
+  onChatToggle,
+  isChatOpen,
 }: TopNavbarProps) => {
   return (
     <div className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -72,6 +77,18 @@ export const TopNavbar = ({
         <div className="flex items-center gap-2">
           {/* Custom right content */}
           {rightContent}
+
+          {onChatToggle && (
+            <Button
+              variant={isChatOpen ? 'default' : 'ghost'}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={onChatToggle}
+              title="AI Chat (Ctrl+Shift+C)"
+            >
+              <MessageSquare className="h-4 w-4" />
+            </Button>
+          )}
 
           {/* Action Buttons */}
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={onShare}>
