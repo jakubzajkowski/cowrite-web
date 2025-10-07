@@ -38,3 +38,14 @@ export interface UserResponse {
   username: string;
   email: string;
 }
+
+export interface ConversationIdRequest {
+  title: string;
+}
+
+export interface ConversationIdResponse {
+  id: number;
+  user_id: number;
+  title: string;
+  created_at: string;
+}

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { authApi } from './auth';
 import { apiClient } from './client';
 import { ROUTES } from '@/routes/config';
-import type { LoginRequest, RegisterRequest } from './types';
+import type { ConversationIdRequest, LoginRequest, RegisterRequest } from './types';
+import { chatApi } from './chat';
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -60,6 +61,19 @@ export const useLogout = () => {
       queryClient.removeQueries({ queryKey: authKeys.currentUser() });
       apiClient.clearAuthToken();
       navigate(ROUTES.SIGNIN);
+    },
+  });
+};
+
+export const useCreateConversation = () => {
+  return useMutation({
+    mutationFn: (conversationId: ConversationIdRequest) =>
+      chatApi.createConversation(conversationId),
+    onSuccess: async () => {
+      console.log('Conversation created successfully');
+    },
+    onError: error => {
+      console.error('Conversation creation failed:', error);
     },
   });
 };
