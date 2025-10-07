@@ -144,15 +144,17 @@
 }
 
 .tiptap ul {
-  @apply list-disc list-inside mb-4;
+  @apply list-disc mb-4 pl-6;
+  list-style-position: outside;
 }
 
 .tiptap ol {
-  @apply list-decimal list-inside mb-4;
+  @apply list-decimal mb-4 pl-6;
+  list-style-position: outside;
 }
 
 .tiptap li {
-  @apply mb-1;
+  @apply mb-1 pl-1;
 }
 
 .tiptap blockquote {
@@ -186,4 +188,32 @@
 .tiptap .is-empty::before {
   content: attr(data-placeholder);
   @apply text-gray-400 pointer-events-none absolute;
+}
+
+/* Markdown Message Styles for Chat */
+.prose {
+  @apply text-sm;
+}
+
+.prose :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply my-0;
+}
+
+.prose :where(code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply text-xs;
+}
+
+.prose :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply text-xs my-2;
+}
+
+.prose :where(ul):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+.prose :where(ol):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply my-2;
+}
+
+.prose :where(h1):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+.prose :where(h2):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+.prose :where(h3):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  @apply my-2;
 }

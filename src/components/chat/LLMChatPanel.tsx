@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useChat } from '@/hooks/useChat';
 import { useCreateConversation } from '@/lib/api';
 import { useState, useRef, useEffect } from 'react';
+import { MarkdownMessage } from './MarkdownMessage';
 
 interface LLMChatPanelProps {
   open: boolean;
@@ -157,7 +158,11 @@ export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) =>
                         message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
                       )}
                     >
-                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      {message.role === 'assistant' ? (
+                        <MarkdownMessage content={message.content} />
+                      ) : (
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                      )}
                       <span className="text-[10px] opacity-70 mt-1 block">
                         {message.timestamp.toLocaleTimeString('en-US', {
                           hour: '2-digit',
