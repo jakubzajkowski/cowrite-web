@@ -21,7 +21,7 @@ export const useChat = ({ conversationId }: UseChatOptions) => {
   useEffect(() => {
     if (!conversationId) return;
 
-    const wsInstance = new WebSocket(`ws://localhost:8000/ws/chat/${conversationId}`);
+    const wsInstance = new WebSocket(`/ws/chat/${conversationId}`);
     setWs(wsInstance);
 
     wsInstance.onopen = () => {

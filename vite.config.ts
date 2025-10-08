@@ -13,6 +13,16 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      '/ws': {
+        target: 'ws://localhost:8000',
+        ws: true,
+        changeOrigin: true,
+      },
+      '/api/v1/chat': {
+        target: 'http://localhost:8000',
+        ws: true,
+        changeOrigin: true,
+      },
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,

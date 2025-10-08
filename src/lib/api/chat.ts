@@ -5,9 +5,6 @@ export const chatApi = {
   createConversation: async (
     conversationId: ConversationIdRequest
   ): Promise<ConversationIdResponse> => {
-    return apiClient.post<ConversationIdResponse>(
-      `${import.meta.env.VITE_AI_SERVICE_URL}/api/v1/chat/conversations`,
-      conversationId
-    );
+    return apiClient.post<ConversationIdResponse>(`/api/v1/chat/conversations`, conversationId);
   },
 };
