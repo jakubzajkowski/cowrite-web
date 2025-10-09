@@ -2,18 +2,9 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { registerSchema, type RegisterFormData } from '@/lib/validation/auth';
 
 interface SignUpFormProps {
@@ -63,118 +54,152 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading = fa
   const passwordStrength = getPasswordStrength(password || '');
 
   return (
-    <div className="flex items-center justify-center px-4 py-14">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
-          <CardDescription className="text-center">
-            Enter your details to create a new account
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-                {error}
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+    <div className="h-screen bg-white flex">
+      {/* Left side - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-black text-white items-center justify-center p-12">
+        <div className="max-w-md">
+          <h1 className="text-6xl font-bold mb-6 tracking-tight">CoWrite</h1>
+          <p className="text-xl text-gray-400 font-light leading-relaxed">
+            Start your journey with AI-powered note-taking
+          </p>
+          <div className="mt-12 space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-1 h-1 bg-white"></div>
+              <span className="text-gray-400">AI writing assistance</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-1 h-1 bg-white"></div>
+              <span className="text-gray-400">Markdown editor</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-1 h-1 bg-white"></div>
+              <span className="text-gray-400">Local files support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
+        <div className="w-full max-w-md py-8">
+          <div className="mb-8">
+            <h2 className="text-4xl font-bold text-black mb-2 tracking-tight">Create Account</h2>
+            <p className="text-gray-600">Get started for free</p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && <div className="p-4 bg-black text-white text-sm">{error}</div>}
+
+            {/* Username Field */}
+            <div className="space-y-1">
+              <Label
+                htmlFor="username"
+                className="text-xs font-medium text-gray-500 uppercase tracking-wider ml-1"
+              >
+                Username
+              </Label>
+              <div className="relative group">
                 <Input
                   id="username"
                   type="text"
-                  placeholder="username"
-                  className="pl-10"
+                  placeholder="johndoe"
+                  className="w-full h-11 px-4 bg-white border-b-2 border-gray-200 text-black focus:outline-none focus:border-black transition-colors text-base rounded-none"
                   {...register('username')}
                 />
+                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-focus-within:w-full"></div>
               </div>
               {errors.username && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.username.message}</p>
+                <p className="text-xs text-black ml-1 mt-1">{errors.username.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            {/* Email Field */}
+            <div className="space-y-1">
+              <Label
+                htmlFor="email"
+                className="text-xs font-medium text-gray-500 uppercase tracking-wider ml-1"
+              >
+                Email
+              </Label>
+              <div className="relative group">
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
-                  className="pl-10"
+                  placeholder="name@company.com"
+                  className="w-full h-11 px-4 bg-white border-b-2 border-gray-200 text-black focus:outline-none focus:border-black transition-colors text-base rounded-none"
                   {...register('email')}
                 />
+                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-focus-within:w-full"></div>
               </div>
               {errors.email && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+                <p className="text-xs text-black ml-1 mt-1">{errors.email.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            {/* Password Field */}
+            <div className="space-y-1">
+              <Label
+                htmlFor="password"
+                className="text-xs font-medium text-gray-500 uppercase tracking-wider ml-1"
+              >
+                Password
+              </Label>
+              <div className="relative group">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  className="pl-10 pr-10"
+                  placeholder="Create a strong password"
+                  className="w-full h-11 px-4 pr-12 bg-white border-b-2 border-gray-200 text-black focus:outline-none focus:border-black transition-colors text-base rounded-none"
                   {...register('password')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
+                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-focus-within:w-full"></div>
               </div>
               {password && passwordStrength.score > 0 && (
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span>Password strength:</span>
-                    <span
-                      className={`font-medium ${
-                        passwordStrength.score < 3
-                          ? 'text-red-600'
-                          : passwordStrength.score < 4
-                            ? 'text-yellow-600'
-                            : 'text-green-600'
-                      }`}
-                    >
-                      {passwordStrength.label}
-                    </span>
+                <div className="mt-2">
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="text-gray-500">Strength:</span>
+                    <span className="text-black font-medium">{passwordStrength.label}</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div className="w-full bg-gray-200 h-0.5">
                     <div
-                      className={`h-1 rounded-full transition-all duration-300 ${passwordStrength.color}`}
+                      className="h-0.5 bg-black transition-all duration-300"
                       style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
                     />
                   </div>
                 </div>
               )}
               {errors.password && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
+                <p className="text-xs text-black ml-1 mt-1">{errors.password.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            {/* Confirm Password Field */}
+            <div className="space-y-1">
+              <Label
+                htmlFor="confirmPassword"
+                className="text-xs font-medium text-gray-500 uppercase tracking-wider ml-1"
+              >
+                Confirm Password
+              </Label>
+              <div className="relative group">
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  className="pl-10 pr-10"
+                  placeholder="Re-enter your password"
+                  className="w-full h-11 px-4 pr-12 bg-white border-b-2 border-gray-200 text-black focus:outline-none focus:border-black transition-colors text-base rounded-none"
                   {...register('confirmPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -182,62 +207,64 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading = fa
                     <Eye className="h-4 w-4" />
                   )}
                 </button>
+                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-focus-within:w-full"></div>
               </div>
               {errors.confirmPassword && (
-                <p className="text-sm text-red-600 dark:text-red-400">
-                  {errors.confirmPassword.message}
-                </p>
+                <p className="text-xs text-black ml-1 mt-1">{errors.confirmPassword.message}</p>
               )}
             </div>
 
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="terms"
-                required
-                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              />
-              <Label htmlFor="terms" className="text-sm">
-                I accept the{' '}
-                <Link
-                  to="/terms"
-                  className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
-                >
-                  terms of service
-                </Link>{' '}
-                and{' '}
-                <Link
-                  to="/privacy"
-                  className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
-                >
-                  privacy policy
-                </Link>
-              </Label>
+            {/* Terms Checkbox */}
+            <div className="pt-3">
+              <label className="flex items-start space-x-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  required
+                  className="w-4 h-4 mt-0.5 border border-gray-300 checked:bg-black checked:border-black focus:ring-0 focus:ring-offset-0 flex-shrink-0"
+                />
+                <span className="text-xs text-gray-600 leading-relaxed group-hover:text-black transition-colors">
+                  I accept the{' '}
+                  <Link to="/terms" className="text-black underline hover:no-underline font-medium">
+                    terms
+                  </Link>{' '}
+                  and{' '}
+                  <Link
+                    to="/privacy"
+                    className="text-black underline hover:no-underline font-medium"
+                  >
+                    privacy policy
+                  </Link>
+                </span>
+              </label>
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={!isValid || isLoading}>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full h-11 bg-black text-white text-base font-medium hover:bg-gray-800 focus:outline-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              disabled={!isValid || isLoading}
+            >
               {isLoading ? (
-                <>
+                <span className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating account...
-                </>
+                  Creating account
+                </span>
               ) : (
                 'Create Account'
               )}
-            </Button>
-            <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-              Already have an account?{' '}
-              <Link
-                to="/signin"
-                className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-              >
+            </button>
+
+            {/* Sign In Link */}
+            <div className="text-center text-sm pt-6">
+              <span className="text-gray-600">Already have an account? </span>
+              <Link to="/signin" className="text-black hover:underline font-bold">
                 Sign in
               </Link>
             </div>
-          </CardFooter>
-        </form>
-      </Card>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

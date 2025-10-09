@@ -3,9 +3,9 @@ import Navigation from '@/components/Navigation';
 
 const RootLayout = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navigation />
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1">
         <Outlet />
       </main>
     </div>
