@@ -15,11 +15,13 @@ import {
   User,
   LogOut,
   Moon,
+  Sun,
   Share2,
   Download,
   Upload,
   MessageSquare,
 } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface TopNavbarProps {
   currentNoteTitle?: string;
@@ -44,6 +46,8 @@ export const TopNavbar = ({
   onChatToggle,
   isChatOpen,
 }: TopNavbarProps) => {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="h-full flex items-center justify-between px-4">
@@ -137,9 +141,18 @@ export const TopNavbar = ({
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Moon className="h-4 w-4 mr-2" />
-                Dark Mode
+              <DropdownMenuItem onClick={toggleTheme}>
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="h-4 w-4 mr-2" />
+                    Light Mode
+                  </>
+                ) : (
+                  <>
+                    <Moon className="h-4 w-4 mr-2" />
+                    Dark Mode
+                  </>
+                )}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>

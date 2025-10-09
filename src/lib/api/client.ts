@@ -24,9 +24,25 @@ export class ApiClient {
       const response = await fetch(endpoint, config);
 
       if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        let errorCode: number | undefined;
+
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+          if (errorData.code) {
+            errorCode = errorData.code;
+          }
+        } catch {
+          console.warn('Failed to parse error response as JSON');
+        }
+
         throw new ApiClientError({
-          message: `HTTP ${response.status}: ${response.statusText}`,
+          message: errorMessage,
           status: response.status,
+          code: errorCode?.toString(),
         });
       }
 

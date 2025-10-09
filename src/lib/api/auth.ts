@@ -15,11 +15,9 @@ export const authApi = {
   // Get current user
   getCurrentUser: async (): Promise<UserResponse> => {
     const user = await apiClient.get<UserResponse>('/api/auth/me');
-    console.log('Fetched current user:', user);
     if (!user) {
       throw new Error('Unauthenticated');
     }
-    console.log('Fetched current user:', user);
     return user;
   },
 
