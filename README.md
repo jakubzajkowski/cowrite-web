@@ -1,10 +1,9 @@
 # CoWrite Web (Frontend)
 
 The **CoWrite Web** is the frontend application for the **CoWrite** platform.  
-It provides the user interface for interacting with AI-powered writing features, user management, and collaboration.  
+It provides the user interface for interacting with AI-powered writing features, user management, and collaboration.
 
 This project is built with **React**, styled with **Tailwind CSS**, and enhanced with modern tooling for scalability and developer experience.
-
 
 ## ⚙️ Tech Stack
 
@@ -17,26 +16,29 @@ This project is built with **React**, styled with **Tailwind CSS**, and enhanced
 - **Prettier** for code formatting
 - **ESLint** for linting and code quality
 
-
 ## 🛠️ Development
 
 ### Install dependencies
+
 ```bash
 npm install
 ```
 
 ### Run the app
+
 ```bash
 npm run dev
 ```
 
 ## ✅ Code Quality
+
 ```bash
 npm run lint:fix
 npm run format
 ```
 
 ## 📦 Build
+
 ```bash
 npm run build
 npm run preview
@@ -58,19 +60,25 @@ This ensures that every commit merged into main is validated, tested, and availa
 Here are some preview images of the CoWrite Web application:
 
 ### Home
+
 ![Home](./docs/image_home.png)
 
 ### Chat
+
 ![Chat](./docs/image_chat.png)
 
 ### Dark Mode
+
 ![Dark Mode](./docs/image_dark_mode.png)
 
 ### Notes
+
 ![Notes](./docs/image_notes.png)
 
 ### Sign In
+
 ![Sign In](./docs/image_sign_in.png)
 
 ### Sign Up
+
 ![Sign Up](./docs/image_sign_up.png)
