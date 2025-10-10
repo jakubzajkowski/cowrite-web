@@ -1,145 +1,76 @@
-# CoWrite Web
+# CoWrite Web (Frontend)
 
-Modern React application for collaborative writing with authentication and rich text editing.
+The **CoWrite Web** is the frontend application for the **CoWrite** platform.  
+It provides the user interface for interacting with AI-powered writing features, user management, and collaboration.  
 
-## 🚀 Quick Start
+This project is built with **React**, styled with **Tailwind CSS**, and enhanced with modern tooling for scalability and developer experience.
 
+
+## ⚙️ Tech Stack
+
+- **React 18+**
+- **Tailwind CSS** for styling
+- **shadcn/ui** component library
+- **React Query** for server state management
+- **React Context** for global app state
+- **WebSockets** for real-time AI responses
+- **Prettier** for code formatting
+- **ESLint** for linting and code quality
+
+
+## 🛠️ Development
+
+### Install dependencies
 ```bash
-# Install dependencies
 npm install
+```
 
-# Start development server
+### Run the app
+```bash
 npm run dev
+```
 
-# Build for production
+## ✅ Code Quality
+```bash
+npm run lint:fix
+npm run format
+```
+
+## 📦 Build
+```bash
 npm run build
-
-# Preview production build
 npm run preview
 ```
 
-## 📋 Available Scripts
+## 🔄 CI/CD (GitHub Actions + Docker Hub)
 
-### Development
+This project uses GitHub Actions to automate the following steps on each push and pull request:
 
-- `npm run dev` - Start development server
-- `npm run preview` - Preview production build locally
+Run lint checks (ESLint + Prettier)
+Run build verification
+Build a Docker image of the frontend
+Push the Docker image to Docker Hub
 
-### Code Quality
+This ensures that every commit merged into main is validated, tested, and available as a containerized image.
 
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Run ESLint and fix issues automatically
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
-- `npm run type-check` - Run TypeScript type checking
+## 🖼️ Screenshots
 
-### CI/CD
+Here are some preview images of the CoWrite Web application:
 
-- `npm run ci` - Run all checks (type-check + lint + format:check)
-- `npm run fix` - Fix all auto-fixable issues (lint:fix + format)
+### Home
+![Home](./docs/image_home.png)
 
-## 🛠 Tech Stack
+### Chat
+![Chat](./docs/image_chat.png)
 
-- **Frontend**: React 19 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS + Radix UI
-- **Forms**: React Hook Form + Zod
-- **API**: React Query (TanStack Query)
-- **Editor**: TipTap
-- **Routing**: React Router DOM
-- **Code Quality**: ESLint + Prettier
+### Dark Mode
+![Dark Mode](./docs/image_dark_mode.png)
 
-## 📝 Features
+### Notes
+![Notes](./docs/image_notes.png)
 
-- ✅ User authentication (login/register)
-- ✅ Form validation with Zod
-- ✅ Rich text editor with TipTap
-- ✅ Responsive design with Tailwind CSS
-- ✅ Dark mode support
-- ✅ File system workspace management
-- ✅ API integration with React Query
-- ✅ JWT token management
+### Sign In
+![Sign In](./docs/image_sign_in.png)
 
-## 🔧 Development Workflow
-
-1. **Before committing**:
-
-   ```bash
-   npm run ci
-   ```
-
-2. **Auto-fix issues**:
-
-   ```bash
-   npm run fix
-   ```
-
-3. **Check types**:
-   ```bash
-   npm run type-check
-   ```
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+### Sign Up
+![Sign Up](./docs/image_sign_up.png)
