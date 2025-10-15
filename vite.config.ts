@@ -18,14 +18,16 @@ export default defineConfig({
         ws: true,
         changeOrigin: true,
       },
-      '/api/v1/chat': {
+      '/api/ai': {
         target: 'http://localhost:8000',
         ws: true,
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ai/, ''),
       },
-      '/api': {
+      '/api/auth': {
         target: 'http://localhost:8080',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/auth/, ''),
       },
     },
   },
