@@ -29,7 +29,7 @@ const NotesApp = () => {
   } = useWorkspace();
 
   // Auto-save functionality
-  const [saveTimeout, setSaveTimeout] = useState<number | null>(null);
+  const [saveTimeout, setSaveTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const handleContentChange = useCallback(
     (content: string) => {
