@@ -264,7 +264,7 @@ const NotesApp = () => {
             {currentFile ? (
               <TipTapEditor
                 key={currentFile.id}
-                content={currentFile.content}
+                content={currentFile.content || ''}
                 onChange={handleContentChange}
                 placeholder={`Start writing "${currentFile.name}"...`}
               />
@@ -323,7 +323,7 @@ const NotesApp = () => {
           {currentFile ? (
             <TipTapEditor
               key={currentFile.id}
-              content={currentFile.content}
+              content={currentFile.content || ''}
               onChange={handleContentChange}
               placeholder={`Start writing "${currentFile.name}"...`}
             />

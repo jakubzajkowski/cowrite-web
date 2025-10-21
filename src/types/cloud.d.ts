@@ -1,10 +1,13 @@
 export interface CloudFile {
-  id: string;
+  id: number;
+  userId: number;
   name: string;
-  type: string;
+  s3Key: string;
+  createdAt: string;
+  updatedAt: string;
   size: number;
-  createdAt: Date;
-  modifiedAt: Date;
+  tags: string;
+  type?: string;
   content?: string;
-  url?: string;
+  modifiedAt?: string;
 }

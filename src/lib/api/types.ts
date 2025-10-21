@@ -49,3 +49,28 @@ export interface ConversationIdResponse {
   title: string;
   created_at: string;
 }
+
+export interface CloudFileResponse {
+  id: number;
+  userId: number;
+  name: string;
+  s3Key: string;
+  createdAt: string;
+  updatedAt: string;
+  size: number;
+  tags: string;
+}
+
+export interface CloudFileContentResponse {
+  content: string;
+}
+
+export interface CloudCreateFileRequest {
+  name: string;
+  content: string;
+}
+
+export interface CloudCreateFileResponse {
+  message: string;
+  noteId: number;
+}

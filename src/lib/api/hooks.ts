@@ -3,8 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { authApi } from './auth';
 import { apiClient } from './client';
 import { ROUTES } from '@/routes/config';
-import type { ConversationIdRequest, LoginRequest, RegisterRequest } from './types';
+import type {
+  CloudCreateFileRequest,
+  ConversationIdRequest,
+  LoginRequest,
+  RegisterRequest,
+} from './types';
 import { chatApi } from './chat';
+import { cloudApi } from './cloud';
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -74,6 +80,35 @@ export const useCreateConversation = () => {
     },
     onError: error => {
       console.error('Conversation creation failed:', error);
+    },
+  });
+};
+
+export const useCloudFiles = () => {
+  return useQuery({
+    queryKey: ['cloudFiles'],
+    queryFn: cloudApi.getFiles,
+  });
+};
+
+export const useCloudFileContent = (id: number) => {
+  return useQuery({
+    queryKey: ['cloudFileContent', id],
+    queryFn: () => cloudApi.getFileContent(id),
+    enabled: id > 0, // Only fetch when we have a valid ID
+  });
+};
+
+export const useCreateCloudFile = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CloudCreateFileRequest) => cloudApi.createFile(data),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['cloudFiles'] });
+      console.log('Cloud file created successfully');
+    },
+    onError: error => {
+      console.error('Cloud file creation failed:', error);
     },
   });
 };
