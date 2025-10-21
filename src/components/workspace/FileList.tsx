@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { MarkdownFile } from '@/hooks/useWorkspace';
-import { FileText, MoreHorizontal, Trash2, RefreshCw } from 'lucide-react';
+import { FileText, MoreHorizontal, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,14 +20,7 @@ interface FileListProps {
   isLoading: boolean;
 }
 
-export const FileList = ({
-  files,
-  currentFile,
-  onFileSelect,
-  onFileDelete,
-  onRefresh,
-  isLoading,
-}: FileListProps) => {
+export const FileList = ({ files, currentFile, onFileSelect, onFileDelete }: FileListProps) => {
   const [deletingFile, setDeletingFile] = useState<string | null>(null);
 
   const handleDelete = async (file: MarkdownFile) => {
@@ -49,72 +42,112 @@ export const FileList = ({
     }
   };
 
+  // Sort files by last modified (most recent first)
+  const sortedFiles = [...files].sort((a, b) => b.lastModified - a.lastModified);
+  const allFiles = sortedFiles;
+
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-3 border-b">
-        <h3 className="font-medium">Files ({files.length})</h3>
-        <Button variant="ghost" size="sm" onClick={onRefresh} disabled={isLoading}>
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-        </Button>
-      </div>
-
       <ScrollArea className="flex-1">
         {files.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground">
-            <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No markdown files found</p>
-            <p className="text-xs mt-1">Create a new file to get started</p>
+          <div className="p-8 text-center text-muted-foreground">
+            <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p className="text-sm font-medium mb-1">No files yet</p>
+            <p className="text-xs">Create your first markdown file to get started</p>
           </div>
         ) : (
-          <div className="p-2 space-y-1">
-            {files.map(file => (
-              <div
-                key={file.id}
-                className={`group flex items-center justify-between p-2 rounded-md hover:bg-accent cursor-pointer transition-colors ${
-                  currentFile?.id === file.id ? 'bg-accent' : ''
-                }`}
-                onClick={() => onFileSelect(file)}
-              >
-                <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  <FileText className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileTime(file.lastModified)}
-                    </p>
-                  </div>
-                </div>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-auto"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <MoreHorizontal className="w-3 h-3" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleDelete(file);
-                      }}
-                      disabled={deletingFile === file.id}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      {deletingFile === file.id ? 'Deleting...' : 'Delete'}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          <div className="p-2">
+            {/* All Files */}
+            <div>
+              <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
+                <FileText className="w-3 h-3 text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  All Files ({allFiles.length})
+                </span>
               </div>
-            ))}
+              <div className="space-y-0.5">
+                {allFiles.map(file => (
+                  <FileItem
+                    key={file.id}
+                    file={file}
+                    isActive={currentFile?.id === file.id}
+                    onSelect={onFileSelect}
+                    onDelete={handleDelete}
+                    isDeleting={deletingFile === file.id}
+                    formatTime={formatFileTime}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </ScrollArea>
     </div>
   );
 };
+
+// Separate FileItem component for better organization
+interface FileItemProps {
+  file: MarkdownFile;
+  isActive: boolean;
+  onSelect: (file: MarkdownFile) => void;
+  onDelete: (file: MarkdownFile) => void;
+  isDeleting: boolean;
+  formatTime: (time: number) => string;
+}
+
+const FileItem = ({
+  file,
+  isActive,
+  onSelect,
+  onDelete,
+  isDeleting,
+  formatTime,
+}: FileItemProps) => (
+  <div
+    className={`group flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer transition-all ${
+      isActive ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'hover:bg-accent/50'
+    }`}
+    onClick={() => onSelect(file)}
+  >
+    <div className="flex items-center gap-2 flex-1 min-w-0">
+      <div className={`p-1 rounded ${isActive ? 'bg-primary/20' : 'bg-blue-50 dark:bg-blue-950'}`}>
+        <FileText
+          className={`w-3.5 h-3.5 ${isActive ? 'text-primary' : 'text-blue-600 dark:text-blue-400'}`}
+        />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate leading-tight">{file.name}</p>
+        <p className="text-xs text-muted-foreground leading-tight">
+          {formatTime(file.lastModified)}
+        </p>
+      </div>
+    </div>
+
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+          onClick={e => e.stopPropagation()}
+        >
+          <MoreHorizontal className="w-3.5 h-3.5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={e => {
+            e.stopPropagation();
+            onDelete(file);
+          }}
+          disabled={isDeleting}
+          className="text-destructive focus:text-destructive"
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          {isDeleting ? 'Deleting...' : 'Delete'}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </div>
+);
