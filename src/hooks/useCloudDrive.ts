@@ -1,6 +1,11 @@
 import { useState, useCallback } from 'react';
 import type { CloudFile } from '../types/cloud';
-import { useCloudFiles, useCloudFileContent, useCreateCloudFile } from '@/lib/api/hooks';
+import {
+  useCloudFiles,
+  useCloudFileContent,
+  useCreateCloudFile,
+  useCloudUpdateFile,
+} from '@/lib/api/hooks';
 import type { CloudFileResponse } from '@/lib/api/types';
 
 const mapResponseToCloudFile = (response: CloudFileResponse): CloudFile => ({
@@ -22,6 +27,7 @@ export const useCloudDrive = () => {
   const { data: cloudFilesData, isLoading, refetch } = useCloudFiles();
   const { data: fileContentData } = useCloudFileContent(selectedFile?.id || 0);
   const createFileMutation = useCreateCloudFile();
+  const updateFileMutation = useCloudUpdateFile(selectedFile?.id || 0);
 
   const files = cloudFilesData?.map(mapResponseToCloudFile) ?? [];
 
@@ -50,10 +56,14 @@ export const useCloudDrive = () => {
     [createFileMutation]
   );
 
-  const saveFile = useCallback(async (file: CloudFile, content: string) => {
-    // TODO: Implement save file API
-    console.log('Saving:', file.name, content);
-  }, []);
+  const saveFile = useCallback(
+    async (file: CloudFile, content: string) => {
+      console.log('💾 Saving file:', file.name);
+      await updateFileMutation.mutateAsync(content);
+      console.log('✅ File saved successfully');
+    },
+    [updateFileMutation]
+  );
 
   const deleteFile = useCallback(
     async (file: CloudFile) => {

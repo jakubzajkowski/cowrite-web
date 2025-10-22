@@ -74,3 +74,7 @@ export interface CloudCreateFileResponse {
   message: string;
   noteId: number;
 }
+
+export interface CloudUpdateFileRequest {
+  content: string;
+}

@@ -95,7 +95,9 @@ export const useCloudFileContent = (id: number) => {
   return useQuery({
     queryKey: ['cloudFileContent', id],
     queryFn: () => cloudApi.getFileContent(id),
-    enabled: id > 0, // Only fetch when we have a valid ID
+    enabled: id > 0,
+    staleTime: 0,
+    gcTime: 0,
   });
 };
 
@@ -109,6 +111,17 @@ export const useCreateCloudFile = () => {
     },
     onError: error => {
       console.error('Cloud file creation failed:', error);
+    },
+  });
+};
+
+export const useCloudUpdateFile = (id: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (content: string) => cloudApi.updateFile(id, { content }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['cloudFileContent', id] });
+      await queryClient.invalidateQueries({ queryKey: ['cloudFiles'] });
     },
   });
 };

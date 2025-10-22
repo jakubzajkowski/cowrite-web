@@ -46,6 +46,10 @@ export class ApiClient {
         });
       }
 
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
       const data: T = await response.json();
       return data;
     } catch (error) {
@@ -69,9 +73,9 @@ export class ApiClient {
     });
   }
 
-  async put<T>(endpoint: string, data?: unknown): Promise<T> {
+  async patch<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'PUT',
+      method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     });
   }

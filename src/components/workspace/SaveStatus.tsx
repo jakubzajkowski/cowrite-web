@@ -42,27 +42,27 @@ export const SaveStatus = ({ isSaving, lastSaved, hasUnsavedChanges }: SaveStatu
 
   if (isSaving) {
     return (
-      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+      <div className="flex items-center space-x-2 text-sm text-blue-600">
         <Save className="w-4 h-4 animate-pulse" />
-        <span>Saving...</span>
+        <span className="font-medium">Saving...</span>
       </div>
     );
   }
 
   if (hasUnsavedChanges) {
     return (
-      <div className="flex items-center space-x-2 text-sm text-yellow-600">
+      <div className="flex items-center space-x-2 text-sm text-amber-600 dark:text-amber-500">
         <AlertCircle className="w-4 h-4" />
-        <span>Unsaved changes</span>
+        <span className="font-medium">Unsaved changes</span>
       </div>
     );
   }
 
   if (lastSaved) {
     return (
-      <div className="flex items-center space-x-2 text-sm text-green-600">
-        <Check className="w-4 h-4" />
-        <span>Saved {timeAgo}</span>
+      <div className="flex items-center space-x-2 text-sm text-green-600 animate-in fade-in duration-200">
+        <Check className="w-4 h-4 font-bold" />
+        <span className="font-medium">Saved {timeAgo}</span>
       </div>
     );
   }

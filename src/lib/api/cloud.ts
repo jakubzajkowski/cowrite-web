@@ -4,6 +4,7 @@ import type {
   CloudCreateFileResponse,
   CloudFileContentResponse,
   CloudFileResponse,
+  CloudUpdateFileRequest,
 } from './types';
 
 export const cloudApi = {
@@ -15,5 +16,8 @@ export const cloudApi = {
   },
   createFile: async (data: CloudCreateFileRequest): Promise<CloudCreateFileResponse> => {
     return apiClient.post<CloudCreateFileResponse>(`/api/cloud/notes`, data);
+  },
+  updateFile: async (id: number, data: CloudUpdateFileRequest): Promise<void> => {
+    return apiClient.patch<void>(`/api/cloud/notes/${id}`, data);
   },
 };
