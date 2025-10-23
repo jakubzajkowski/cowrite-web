@@ -78,7 +78,7 @@ const NotesApp = () => {
           setIsSaving(true);
           try {
             if (workspaceType === 'cloud' && cloudCurrentFile) {
-              await saveCloudFile(cloudCurrentFile, content);
+              await saveCloudFile(content);
             } else if (workspaceType === 'local' && localCurrentFile) {
               await saveLocalFile(localCurrentFile, content);
             }
@@ -90,8 +90,7 @@ const NotesApp = () => {
             setIsSaving(false);
           }
         }
-      }, 1000); // Auto-save after 1 second of inactivity
-
+      }, 1000);
       setSaveTimeout(timeout);
     },
     [
@@ -116,7 +115,7 @@ const NotesApp = () => {
             // Get current content from editor
             const editorContent = document.querySelector('.tiptap')?.innerHTML || '';
             if (workspaceType === 'cloud' && cloudCurrentFile) {
-              await saveCloudFile(cloudCurrentFile, editorContent);
+              await saveCloudFile(editorContent);
             } else if (workspaceType === 'local' && localCurrentFile) {
               await saveLocalFile(localCurrentFile, editorContent);
             }
@@ -262,12 +261,14 @@ const NotesApp = () => {
 
           <div className="flex-1 flex flex-col overflow-hidden">
             {currentFile ? (
-              <TipTapEditor
-                key={currentFile.id}
-                content={currentFile.content || ''}
-                onChange={handleContentChange}
-                placeholder={`Start writing "${currentFile.name}"...`}
-              />
+              <div className="flex-1 overflow-y-auto">
+                <TipTapEditor
+                  key={currentFile.id}
+                  content={currentFile.content || ''}
+                  onChange={handleContentChange}
+                  placeholder={`Start writing "${currentFile.name}"...`}
+                />
+              </div>
             ) : (
               <div className="flex-1 flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
@@ -321,12 +322,14 @@ const NotesApp = () => {
 
         <div className="flex-1 flex flex-col overflow-hidden">
           {currentFile ? (
-            <TipTapEditor
-              key={currentFile.id}
-              content={currentFile.content || ''}
-              onChange={handleContentChange}
-              placeholder={`Start writing "${currentFile.name}"...`}
-            />
+            <div className="flex-1 overflow-y-auto">
+              <TipTapEditor
+                key={currentFile.id}
+                content={currentFile.content || ''}
+                onChange={handleContentChange}
+                placeholder={`Start writing "${currentFile.name}"...`}
+              />
+            </div>
           ) : (
             <div className="flex-1 flex items-center justify-center text-muted-foreground">
               <div className="text-center">

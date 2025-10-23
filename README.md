@@ -75,6 +75,10 @@ Here are some preview images of the CoWrite Web application:
 
 ![Notes](./docs/image_notes.png)
 
+### Workspaces
+
+![Notes](./docs/image_workspaces.png)
+
 ### Sign In
 
 ![Sign In](./docs/image_sign_in.png)

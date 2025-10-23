@@ -5,6 +5,7 @@ import {
   useCloudFileContent,
   useCreateCloudFile,
   useCloudUpdateFile,
+  useDeleteCloudFile,
 } from '@/lib/api/hooks';
 import type { CloudFileResponse } from '@/lib/api/types';
 
@@ -28,10 +29,10 @@ export const useCloudDrive = () => {
   const { data: fileContentData } = useCloudFileContent(selectedFile?.id || 0);
   const createFileMutation = useCreateCloudFile();
   const updateFileMutation = useCloudUpdateFile(selectedFile?.id || 0);
+  const deleteFileMutation = useDeleteCloudFile(selectedFile?.id || 0);
 
   const files = cloudFilesData?.map(mapResponseToCloudFile) ?? [];
 
-  // Merge selected file with loaded content
   const currentFile = selectedFile
     ? { ...selectedFile, content: fileContentData?.content ?? '' }
     : null;
@@ -57,34 +58,26 @@ export const useCloudDrive = () => {
   );
 
   const saveFile = useCallback(
-    async (file: CloudFile, content: string) => {
-      console.log('💾 Saving file:', file.name);
+    async (content: string) => {
       await updateFileMutation.mutateAsync(content);
-      console.log('✅ File saved successfully');
     },
     [updateFileMutation]
   );
 
   const deleteFile = useCallback(
     async (file: CloudFile) => {
-      // TODO: Implement delete file API
-      console.log('Deleting:', file.name);
+      await deleteFileMutation.mutateAsync();
+      if (selectedFile?.id === file.id) {
+        setSelectedFile(null);
+      }
       await refetch();
     },
-    [refetch]
+    [deleteFileMutation, refetch, selectedFile]
   );
 
-  const uploadFiles = useCallback(
-    async (fileList: FileList) => {
-      // TODO: Implement upload files API
-      console.log(
-        'Uploading:',
-        Array.from(fileList).map(f => f.name)
-      );
-      await refetch();
-    },
-    [refetch]
-  );
+  const uploadFiles = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   const downloadFile = useCallback(async (file: CloudFile) => {
     // TODO: Implement download file API

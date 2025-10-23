@@ -68,7 +68,7 @@ export const DriveWorkspace = ({
   isLoading = false,
 }: DriveWorkspaceProps) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newFileName, setNewFileName] = useState('');
 

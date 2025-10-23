@@ -20,4 +20,7 @@ export const cloudApi = {
   updateFile: async (id: number, data: CloudUpdateFileRequest): Promise<void> => {
     return apiClient.patch<void>(`/api/cloud/notes/${id}`, data);
   },
+  deleteFile: async (id: number): Promise<void> => {
+    return apiClient.delete<void>(`/api/cloud/notes/${id}`);
+  },
 };

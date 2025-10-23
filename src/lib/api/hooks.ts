@@ -121,6 +121,15 @@ export const useCloudUpdateFile = (id: number) => {
     mutationFn: (content: string) => cloudApi.updateFile(id, { content }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['cloudFileContent', id] });
+    },
+  });
+};
+
+export const useDeleteCloudFile = (id: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => cloudApi.deleteFile(id),
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['cloudFiles'] });
     },
   });
