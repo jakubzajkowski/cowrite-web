@@ -2,22 +2,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Bot, X, Sparkles, Plus, Loader2, Send } from 'lucide-react';
+import { Bot, X, Sparkles, Plus, Loader2, Send, FileText, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useChat } from '@/hooks/useChat';
 import { useCreateConversation } from '@/lib/api';
 import { useState, useRef, useEffect } from 'react';
 import { MarkdownMessage } from './MarkdownMessage';
+import { FileAttachmentButton } from './FileAttachmentButton';
+
+interface File {
+  id: string | number;
+  name: string;
+  content?: string;
+}
 
 interface LLMChatPanelProps {
   open: boolean;
   onClose: () => void;
   className?: string;
+  files?: File[];
 }
 
-export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) => {
+export const LLMChatPanel = ({ open, onClose, className, files = [] }: LLMChatPanelProps) => {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const createConversation = useCreateConversation();
   const { connected, messages, isLoading, sendMessage, clearMessages } = useChat({
     conversationId: currentConversationId,
@@ -38,6 +47,7 @@ export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) =>
         onSuccess: data => {
           setCurrentConversationId(data.id);
           clearMessages();
+          setAttachedFiles([]);
         },
       }
     );
@@ -47,8 +57,18 @@ export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) =>
     e.preventDefault();
     if (!inputValue.trim() || !currentConversationId) return;
 
-    sendMessage(inputValue);
+    let messageContent = inputValue;
+
+    if (attachedFiles.length > 0) {
+      const filesContext = attachedFiles
+        .map(file => `\n\n--- File: ${file.name} ---\n${file.content || ''}`)
+        .join('\n');
+      messageContent = `${inputValue}${filesContext}`;
+    }
+
+    sendMessage(messageContent);
     setInputValue('');
+    setAttachedFiles([]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -56,6 +76,14 @@ export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) =>
       e.preventDefault();
       handleSubmit(e);
     }
+  };
+
+  const handleAttachFile = (file: File) => {
+    setAttachedFiles(prev => [...prev, file]);
+  };
+
+  const handleDetachFile = (fileId: string | number) => {
+    setAttachedFiles(prev => prev.filter(f => f.id !== fileId));
   };
 
   return (
@@ -203,7 +231,34 @@ export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) =>
         <Separator />
 
         <form onSubmit={handleSubmit} className="p-3 flex flex-col gap-2">
+          {attachedFiles.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {attachedFiles.map(file => (
+                <div
+                  key={file.id}
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/10 text-xs"
+                >
+                  <FileText className="h-3 w-3" />
+                  <span className="max-w-[120px] truncate">{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleDetachFile(file.id)}
+                    className="hover:text-destructive transition-colors"
+                  >
+                    <XCircle className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="flex items-end gap-2">
+            <FileAttachmentButton
+              files={files}
+              attachedFiles={attachedFiles}
+              onAttach={handleAttachFile}
+              onDetach={handleDetachFile}
+              disabled={!currentConversationId || isLoading}
+            />
             <Input
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}

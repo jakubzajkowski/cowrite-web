@@ -40,16 +40,16 @@ export const useWorkspaceStore = create<WorkspaceState>(set => ({
   selectedFile: null,
   isLoading: false,
 
-  setWorkspace: workspace => {
+  setWorkspace: (workspace: WorkspaceFolder | null) => {
     set({ workspace });
     if (workspace) {
       idbSet(WORKSPACE_HANDLE_KEY, workspace.handle).catch(console.error);
     }
   },
 
-  setFiles: files => set({ files }),
+  setFiles: (files: MarkdownFile[]) => set({ files }),
 
-  setSelectedFile: file => {
+  setSelectedFile: (file: MarkdownFile | null) => {
     set({ selectedFile: file });
     if (file) {
       localStorage.setItem(
@@ -61,11 +61,11 @@ export const useWorkspaceStore = create<WorkspaceState>(set => ({
     }
   },
 
-  setIsLoading: isLoading => set({ isLoading }),
+  setIsLoading: (isLoading: boolean) => set({ isLoading }),
 
-  addFile: file => set(state => ({ files: [...state.files, file] })),
+  addFile: (file: MarkdownFile) => set(state => ({ files: [...state.files, file] })),
 
-  updateFile: (fileId, updates) =>
+  updateFile: (fileId: string, updates: Partial<MarkdownFile>) =>
     set(state => ({
       files: state.files.map(f => (f.id === fileId ? { ...f, ...updates } : f)),
       selectedFile:
@@ -74,7 +74,7 @@ export const useWorkspaceStore = create<WorkspaceState>(set => ({
           : state.selectedFile,
     })),
 
-  removeFile: fileId =>
+  removeFile: (fileId: string) =>
     set(state => ({
       files: state.files.filter(f => f.id !== fileId),
       selectedFile: state.selectedFile?.id === fileId ? null : state.selectedFile,

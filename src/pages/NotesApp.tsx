@@ -56,6 +56,7 @@ const NotesApp = () => {
   const isCloud = workspaceType === 'cloud';
   const currentFile = isCloud ? cloudCurrentFile : localCurrentFile;
   const isLoading = isCloud ? cloudIsLoading : localIsLoading;
+  const files = isCloud ? cloudFiles : localFiles;
 
   const [saveTimeout, setSaveTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
@@ -140,7 +141,7 @@ const NotesApp = () => {
           onSelectLocal={() => setWorkspaceType('local')}
           onSelectCloud={() => setWorkspaceType('cloud')}
         />
-        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} files={files} />
       </div>
     );
   }
@@ -162,7 +163,7 @@ const NotesApp = () => {
           onSelectWorkspace={selectWorkspace}
           isSupported={isFileSystemAccessSupported()}
         />
-        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} files={files} />
       </div>
     );
   }
@@ -228,7 +229,7 @@ const NotesApp = () => {
           )}
           <div className="flex-1 flex flex-col overflow-hidden">{renderEditor()}</div>
         </div>
-        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} files={files} />
       </div>
     );
   }
@@ -269,7 +270,7 @@ const NotesApp = () => {
         )}
         <div className="flex-1 flex flex-col overflow-hidden">{renderEditor()}</div>
       </div>
-      <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+      <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} files={files} />
     </div>
   );
 };
