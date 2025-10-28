@@ -1,84 +1,39 @@
-import { useState, useCallback, useEffect } from 'react';
-import { set as idbSet, get as idbGet } from 'idb-keyval';
+import { useCallback, useEffect } from 'react';
+import { useWorkspaceStore, restoreWorkspace, restoreSelectedFile } from '@/stores/workspaceStore';
+import type { MarkdownFile, WorkspaceFolder } from '@/stores/workspaceStore';
 
-export interface MarkdownFile {
-  id: string;
-  name: string;
-  path: string;
-  content: string;
-  lastModified: number;
-  handle?: FileSystemFileHandle;
-}
-
-export interface WorkspaceFolder {
-  name: string;
-  handle: FileSystemDirectoryHandle;
-  path: string;
-}
-
-const WORKSPACE_HANDLE_KEY = 'cowrite-workspace-handle';
-const CURRENT_FILE_STORAGE_KEY = 'cowrite-current-file';
+export type { MarkdownFile, WorkspaceFolder };
 
 export const useWorkspace = () => {
-  const [workspace, setWorkspace] = useState<WorkspaceFolder | null>(null);
-  const [files, setFiles] = useState<MarkdownFile[]>([]);
-  const [currentFile, setCurrentFile] = useState<MarkdownFile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    workspace,
+    files,
+    selectedFile,
+    isLoading,
+    setWorkspace,
+    setFiles,
+    setSelectedFile,
+    setIsLoading,
+    addFile,
+    updateFile,
+    removeFile,
+  } = useWorkspaceStore();
 
-  const saveWorkspaceToStorage = useCallback(async (workspaceData: WorkspaceFolder) => {
-    try {
-      await idbSet(WORKSPACE_HANDLE_KEY, workspaceData.handle);
-    } catch (error) {
-      console.error('Error saving workspace to IndexedDB:', error);
-    }
-  }, []);
-
-  const saveCurrentFileToStorage = useCallback((file: MarkdownFile | null) => {
-    try {
-      if (file) {
-        const storageData = {
-          id: file.id,
-          name: file.name,
-          path: file.path,
-        };
-        localStorage.setItem(CURRENT_FILE_STORAGE_KEY, JSON.stringify(storageData));
-      } else {
-        localStorage.removeItem(CURRENT_FILE_STORAGE_KEY);
+  useEffect(() => {
+    restoreWorkspace().then(restored => {
+      if (restored) {
+        loadFilesFromWorkspace(restored.handle);
       }
-    } catch (error) {
-      console.error('Error saving current file to localStorage:', error);
-    }
-  }, []);
-
-  const restoreWorkspaceFromStorage = useCallback(async () => {
-    if (!isFileSystemAccessSupported()) return;
-
-    try {
-      const savedHandle = await idbGet(WORKSPACE_HANDLE_KEY);
-      if (!savedHandle) return;
-
-      const permission = await savedHandle.queryPermission({ mode: 'readwrite' });
-      if (permission === 'granted') {
-        const newWorkspace: WorkspaceFolder = {
-          name: savedHandle.name,
-          handle: savedHandle,
-          path: savedHandle.name,
-        };
-        setWorkspace(newWorkspace);
-        await loadFilesFromWorkspace(savedHandle);
-      }
-    } catch (error) {
-      console.error('Error restoring workspace from IndexedDB:', error);
-    }
+    });
   }, []);
 
   useEffect(() => {
-    restoreWorkspaceFromStorage();
-  }, [restoreWorkspaceFromStorage]);
+    if (files.length > 0) {
+      restoreSelectedFile();
+    }
+  }, [files]);
 
-  const isFileSystemAccessSupported = () => {
-    return 'showDirectoryPicker' in window;
-  };
+  const isFileSystemAccessSupported = () => 'showDirectoryPicker' in window;
 
   const selectWorkspace = useCallback(async () => {
     if (!isFileSystemAccessSupported()) {
@@ -97,26 +52,28 @@ export const useWorkspace = () => {
       };
 
       setWorkspace(newWorkspace);
-      await saveWorkspaceToStorage(newWorkspace);
       await loadFilesFromWorkspace(dirHandle);
     } catch (error) {
       console.error('Error selecting workspace:', error);
     }
-  }, [saveWorkspaceToStorage]);
+  }, [setWorkspace]);
 
-  const loadFilesFromWorkspace = useCallback(async (dirHandle: FileSystemDirectoryHandle) => {
-    setIsLoading(true);
-    const markdownFiles: MarkdownFile[] = [];
+  const loadFilesFromWorkspace = useCallback(
+    async (dirHandle: FileSystemDirectoryHandle) => {
+      setIsLoading(true);
+      const markdownFiles: MarkdownFile[] = [];
 
-    try {
-      await scanDirectory(dirHandle, '', markdownFiles);
-      setFiles(markdownFiles);
-    } catch (error) {
-      console.error('Error loading files:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        await scanDirectory(dirHandle, '', markdownFiles);
+        setFiles(markdownFiles);
+      } catch (error) {
+        console.error('Error loading files:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [setFiles, setIsLoading]
+  );
 
   const scanDirectory = async (
     dirHandle: FileSystemDirectoryHandle,
@@ -155,7 +112,6 @@ export const useWorkspace = () => {
 
       try {
         const finalFileName = fileName.endsWith('.md') ? fileName : `${fileName}.md`;
-
         const fileHandle = await workspace.handle.getFileHandle(finalFileName, { create: true });
         const writable = await fileHandle.createWritable();
         await writable.write(content);
@@ -170,15 +126,14 @@ export const useWorkspace = () => {
           handle: fileHandle,
         };
 
-        setFiles(prev => [...prev, newFile]);
-        setCurrentFile(newFile);
-        return newFile;
+        addFile(newFile);
+        setSelectedFile(newFile);
       } catch (error) {
         console.error('Error creating file:', error);
         throw error;
       }
     },
-    [workspace]
+    [workspace, addFile, setSelectedFile]
   );
 
   const saveFile = useCallback(
@@ -190,25 +145,16 @@ export const useWorkspace = () => {
         await writable.write(newContent);
         await writable.close();
 
-        const updatedFile = {
-          ...file,
+        updateFile(file.id, {
           content: newContent,
           lastModified: Date.now(),
-        };
-
-        setFiles(prev => prev.map(f => (f.id === file.id ? updatedFile : f)));
-
-        if (currentFile?.id === file.id) {
-          setCurrentFile(updatedFile);
-        }
-
-        return updatedFile;
+        });
       } catch (error) {
         console.error('Error saving file:', error);
         throw error;
       }
     },
-    [currentFile]
+    [updateFile]
   );
 
   const deleteFile = useCallback(
@@ -217,17 +163,13 @@ export const useWorkspace = () => {
 
       try {
         await workspace.handle.removeEntry(file.name);
-        setFiles(prev => prev.filter(f => f.id !== file.id));
-
-        if (currentFile?.id === file.id) {
-          setCurrentFile(null);
-        }
+        removeFile(file.id);
       } catch (error) {
         console.error('Error deleting file:', error);
         throw error;
       }
     },
-    [workspace, currentFile]
+    [workspace, removeFile]
   );
 
   const refreshWorkspace = useCallback(async () => {
@@ -236,39 +178,10 @@ export const useWorkspace = () => {
     }
   }, [workspace, loadFilesFromWorkspace]);
 
-  const setCurrentFileWithStorage = useCallback(
-    (file: MarkdownFile | null) => {
-      setCurrentFile(file);
-      saveCurrentFileToStorage(file);
-    },
-    [saveCurrentFileToStorage]
-  );
-
-  const restoreCurrentFileFromStorage = useCallback(() => {
-    try {
-      const storedFile = localStorage.getItem(CURRENT_FILE_STORAGE_KEY);
-      if (storedFile) {
-        const fileData = JSON.parse(storedFile);
-        const foundFile = files.find(f => f.id === fileData.id);
-        if (foundFile) {
-          setCurrentFile(foundFile);
-        }
-      }
-    } catch (error) {
-      console.error('Error restoring current file from localStorage:', error);
-    }
-  }, [files]);
-
-  useEffect(() => {
-    if (files.length > 0) {
-      restoreCurrentFileFromStorage();
-    }
-  }, [files, restoreCurrentFileFromStorage]);
-
   return {
     workspace,
     files,
-    currentFile,
+    currentFile: selectedFile,
     isLoading,
     isFileSystemAccessSupported,
     selectWorkspace,
@@ -276,6 +189,6 @@ export const useWorkspace = () => {
     saveFile,
     deleteFile,
     refreshWorkspace,
-    setCurrentFile: setCurrentFileWithStorage,
+    setCurrentFile: setSelectedFile,
   };
 };

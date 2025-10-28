@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import type { CloudFile } from '../types/cloud';
 import {
   useCloudFiles,
@@ -8,6 +8,7 @@ import {
   useDeleteCloudFile,
 } from '@/lib/api/hooks';
 import type { CloudFileResponse } from '@/lib/api/types';
+import { useCloudDriveStore } from '@/stores/cloudDriveStore';
 
 const mapResponseToCloudFile = (response: CloudFileResponse): CloudFile => ({
   id: response.id,
@@ -24,7 +25,9 @@ const mapResponseToCloudFile = (response: CloudFileResponse): CloudFile => ({
 });
 
 export const useCloudDrive = () => {
-  const [selectedFile, setSelectedFile] = useState<CloudFile | null>(null);
+  const { selectedFile, setSelectedFile, setFileContent, getFileContent, clearFileContent } =
+    useCloudDriveStore();
+
   const { data: cloudFilesData, isLoading, refetch } = useCloudFiles();
   const { data: fileContentData } = useCloudFileContent(selectedFile?.id || 0);
   const createFileMutation = useCreateCloudFile();
@@ -33,46 +36,59 @@ export const useCloudDrive = () => {
 
   const files = cloudFilesData?.map(mapResponseToCloudFile) ?? [];
 
+  useEffect(() => {
+    if (selectedFile && fileContentData?.content !== undefined) {
+      setFileContent(selectedFile.id, fileContentData.content);
+    }
+  }, [selectedFile, fileContentData, setFileContent]);
+
   const currentFile = selectedFile
-    ? { ...selectedFile, content: fileContentData?.content ?? '' }
+    ? { ...selectedFile, content: getFileContent(selectedFile.id) }
     : null;
 
   const loadFiles = useCallback(() => refetch(), [refetch]);
 
-  const setCurrentFile = useCallback((file: CloudFile | null) => {
-    setSelectedFile(file);
-  }, []);
+  const setCurrentFile = useCallback(
+    (file: CloudFile | null) => {
+      setSelectedFile(file);
+    },
+    [setSelectedFile]
+  );
 
   const createFile = useCallback(
     async (fileName: string) => {
       try {
-        await createFileMutation.mutateAsync({
+        const newFile = await createFileMutation.mutateAsync({
           name: fileName,
           content: '',
         });
+        setFileContent(newFile.noteId, '');
       } catch (error) {
         console.error('Failed to create file:', error);
       }
     },
-    [createFileMutation]
+    [createFileMutation, setFileContent]
   );
 
   const saveFile = useCallback(
     async (content: string) => {
+      if (!selectedFile) return;
       await updateFileMutation.mutateAsync(content);
+      setFileContent(selectedFile.id, content);
     },
-    [updateFileMutation]
+    [updateFileMutation, selectedFile, setFileContent]
   );
 
   const deleteFile = useCallback(
     async (file: CloudFile) => {
       await deleteFileMutation.mutateAsync();
+      clearFileContent(file.id);
       if (selectedFile?.id === file.id) {
         setSelectedFile(null);
       }
       await refetch();
     },
-    [deleteFileMutation, refetch, selectedFile]
+    [deleteFileMutation, refetch, selectedFile, setSelectedFile, clearFileContent]
   );
 
   const uploadFiles = useCallback(async () => {
@@ -80,7 +96,6 @@ export const useCloudDrive = () => {
   }, [refetch]);
 
   const downloadFile = useCallback(async (file: CloudFile) => {
-    // TODO: Implement download file API
     console.log('Downloading:', file.name);
   }, []);
 
