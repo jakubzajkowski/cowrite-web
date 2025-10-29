@@ -10,9 +10,11 @@ import { useState, useRef, useEffect } from 'react';
 import { MarkdownMessage } from './MarkdownMessage';
 import { FileAttachmentButton } from './FileAttachmentButton';
 
-interface File {
-  id: string | number;
+interface AttachedFile {
+  id: string;
   name: string;
+  type?: string;
+  size?: number;
   content?: string;
 }
 
@@ -20,20 +22,18 @@ interface LLMChatPanelProps {
   open: boolean;
   onClose: () => void;
   className?: string;
-  files?: File[];
 }
 
-export const LLMChatPanel = ({ open, onClose, className, files = [] }: LLMChatPanelProps) => {
+export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) => {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState('');
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const createConversation = useCreateConversation();
   const { connected, messages, isLoading, sendMessage, clearMessages } = useChat({
     conversationId: currentConversationId,
   });
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to latest message
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -61,7 +61,11 @@ export const LLMChatPanel = ({ open, onClose, className, files = [] }: LLMChatPa
 
     if (attachedFiles.length > 0) {
       const filesContext = attachedFiles
-        .map(file => `\n\n--- File: ${file.name} ---\n${file.content || ''}`)
+        .map(file => {
+          const header = `\n\n--- File: ${file.name}${file.type ? ` (${file.type})` : ''}${file.size ? ` • ${file.size}B` : ''} ---\n`;
+          const body = file.content ?? '[binary file attached - preview not available]';
+          return header + body;
+        })
         .join('\n');
       messageContent = `${inputValue}${filesContext}`;
     }
@@ -78,12 +82,33 @@ export const LLMChatPanel = ({ open, onClose, className, files = [] }: LLMChatPa
     }
   };
 
-  const handleAttachFile = (file: File) => {
-    setAttachedFiles(prev => [...prev, file]);
+  const handleDetachFile = (fileId: string) => {
+    setAttachedFiles(prev => prev.filter(f => f.id !== fileId));
   };
 
-  const handleDetachFile = (fileId: string | number) => {
-    setAttachedFiles(prev => prev.filter(f => f.id !== fileId));
+  const isTextLike = (file: File) => {
+    if (file.type.startsWith('text/')) return true;
+    if (file.type.includes('json') || file.type.includes('xml') || file.type.includes('csv')) return true;
+    const name = file.name.toLowerCase();
+    return name.endsWith('.md') || name.endsWith('.txt') || name.endsWith('.json') || name.endsWith('.csv');
+  };
+
+  const handleFilesChosen = async (files: File[]) => {
+    const additions: AttachedFile[] = [];
+    for (const f of files) {
+      try {
+        const id = `${f.name}-${f.size}-${(f as any).lastModified ?? Date.now()}`;
+        if (isTextLike(f)) {
+          const content = await f.text();
+          additions.push({ id, name: f.name, type: f.type, size: f.size, content });
+        } else {
+          additions.push({ id, name: f.name, type: f.type, size: f.size, content: undefined });
+        }
+      } catch (e) {
+        additions.push({ id: `${f.name}-${Date.now()}`, name: f.name });
+      }
+    }
+    setAttachedFiles(prev => [...prev, ...additions]);
   };
 
   return (
@@ -253,11 +278,10 @@ export const LLMChatPanel = ({ open, onClose, className, files = [] }: LLMChatPa
           )}
           <div className="flex items-end gap-2">
             <FileAttachmentButton
-              files={files}
-              attachedFiles={attachedFiles}
-              onAttach={handleAttachFile}
-              onDetach={handleDetachFile}
+              onFilesChosen={handleFilesChosen}
               disabled={!currentConversationId || isLoading}
+              count={attachedFiles.length}
+              accept="*/*"
             />
             <Input
               value={inputValue}
