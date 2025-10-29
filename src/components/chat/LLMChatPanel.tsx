@@ -57,22 +57,8 @@ export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) =>
     e.preventDefault();
     if (!inputValue.trim() || !currentConversationId) return;
 
-    let messageContent = inputValue;
-
-    if (attachedFiles.length > 0) {
-      const filesContext = attachedFiles
-        .map(file => {
-          const header = `\n\n--- File: ${file.name}${file.type ? ` (${file.type})` : ''}${file.size ? ` • ${file.size}B` : ''} ---\n`;
-          const body = file.content ?? '[binary file attached - preview not available]';
-          return header + body;
-        })
-        .join('\n');
-      messageContent = `${inputValue}${filesContext}`;
-    }
-
-    sendMessage(messageContent);
+    sendMessage(inputValue);
     setInputValue('');
-    setAttachedFiles([]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -86,28 +72,14 @@ export const LLMChatPanel = ({ open, onClose, className }: LLMChatPanelProps) =>
     setAttachedFiles(prev => prev.filter(f => f.id !== fileId));
   };
 
-  const isTextLike = (file: File) => {
-    if (file.type.startsWith('text/')) return true;
-    if (file.type.includes('json') || file.type.includes('xml') || file.type.includes('csv')) return true;
-    const name = file.name.toLowerCase();
-    return name.endsWith('.md') || name.endsWith('.txt') || name.endsWith('.json') || name.endsWith('.csv');
-  };
-
-  const handleFilesChosen = async (files: File[]) => {
-    const additions: AttachedFile[] = [];
-    for (const f of files) {
-      try {
-        const id = `${f.name}-${f.size}-${(f as any).lastModified ?? Date.now()}`;
-        if (isTextLike(f)) {
-          const content = await f.text();
-          additions.push({ id, name: f.name, type: f.type, size: f.size, content });
-        } else {
-          additions.push({ id, name: f.name, type: f.type, size: f.size, content: undefined });
-        }
-      } catch (e) {
-        additions.push({ id: `${f.name}-${Date.now()}`, name: f.name });
-      }
-    }
+  const handleFilesChosen = (files: File[]) => {
+    const now = Date.now();
+    const additions: AttachedFile[] = files.map(f => ({
+      id: `${f.name}-${f.size}-${now}`,
+      name: f.name,
+      type: f.type,
+      size: f.size,
+    }));
     setAttachedFiles(prev => [...prev, ...additions]);
   };
 

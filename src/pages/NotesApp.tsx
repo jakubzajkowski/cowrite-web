@@ -140,7 +140,7 @@ const NotesApp = () => {
           onSelectLocal={() => setWorkspaceType('local')}
           onSelectCloud={() => setWorkspaceType('cloud')}
         />
-  <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
       </div>
     );
   }
@@ -162,7 +162,7 @@ const NotesApp = () => {
           onSelectWorkspace={selectWorkspace}
           isSupported={isFileSystemAccessSupported()}
         />
-  <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
       </div>
     );
   }
@@ -228,7 +228,7 @@ const NotesApp = () => {
           )}
           <div className="flex-1 flex flex-col overflow-hidden">{renderEditor()}</div>
         </div>
-  <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+        <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
       </div>
     );
   }
@@ -269,7 +269,7 @@ const NotesApp = () => {
         )}
         <div className="flex-1 flex flex-col overflow-hidden">{renderEditor()}</div>
       </div>
-  <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+      <LLMChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   );
 };
